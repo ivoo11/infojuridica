@@ -393,49 +393,135 @@ input {
 @media (max-width: 600px) {
 
     .site {
-        width: min(calc(100% - 32px), var(--max-width));
+        width: calc(100% - 32px);
+        min-height: 100svh;
     }
 
+    /* HEADER */
+
     .header {
-        min-height: 105px;
+        min-height: auto;
+        padding: 28px 0 24px;
+    }
+
+    .brand-kicker {
+        margin-bottom: 6px;
+        font-size: 9px;
     }
 
     .brand-title {
-        font-size: 15px;
+        font-size: 14px;
     }
 
-    .hero {
-        gap: 42px;
+    .brand-country {
+        margin-top: 3px;
+        font-size: 9px;
+    }
 
-        padding: 50px 0 65px;
+
+    /* HERO */
+
+    .hero {
+        display: block;
+
+        padding: 32px 0 38px;
+    }
+
+    .hero-copy {
+        margin-bottom: 28px;
+    }
+
+    .eyebrow {
+        margin-bottom: 12px;
+
+        font-size: 10px;
     }
 
     .hero h1 {
-        font-size: clamp(43px, 13vw, 58px);
+        max-width: 500px;
+
+        font-size: clamp(38px, 11vw, 48px);
+        line-height: .98;
+        letter-spacing: -.055em;
     }
 
     .intro {
-        margin-top: 25px;
+        margin-top: 18px;
 
-        font-size: 15px;
+        font-size: 14px;
+        line-height: 1.5;
     }
 
+
+    /* CARD */
+
     .search-card {
-        padding: 25px;
+        width: 100%;
+        max-width: none;
+
+        padding: 24px;
+
         border-radius: 14px;
     }
 
-    .sex-options {
-        grid-template-columns: 1fr;
+    .field {
+        margin-bottom: 20px;
     }
+
+    .field > label,
+    .field legend {
+        margin-bottom: 8px;
+
+        font-size: 12px;
+    }
+
+    #dni {
+        height: 50px;
+
+        padding: 0 14px;
+
+        font-size: 16px;
+    }
+
+
+    /* SEXO EN DOS COLUMNAS TAMBIÉN EN MOBILE */
+
+    .sex-options {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .radio-option span {
+        height: 46px;
+
+        font-size: 13px;
+    }
+
+
+    /* BOTÓN */
+
+    .submit-button {
+        min-height: 50px;
+
+        font-size: 13px;
+    }
+
+
+    /* RESULTADO */
+
+    .result-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+
+    /* FOOTER */
 
     .footer {
-        flex-direction: column;
-        gap: 12px;
-    }
+        padding: 22px 0 28px;
 
-    .footer .source {
-        text-align: left;
+        font-size: 9px;
+        line-height: 1.6;
     }
 
 }
