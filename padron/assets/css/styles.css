@@ -374,16 +374,27 @@ input {
 
     .hero {
         grid-template-columns: 1fr;
-        gap: 55px;
+        gap: 45px;
 
-        padding: 65px 0 80px;
+        padding: 60px 0 80px;
+
+        justify-items: center;
     }
 
     .hero-copy {
+        width: 100%;
         max-width: 600px;
+
+        text-align: center;
+    }
+
+    .intro {
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .search-card {
+        width: 100%;
         max-width: 520px;
     }
 
