@@ -7,12 +7,14 @@ declare(strict_types=1);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Consulta de padrón electoral</title>
+    <title>Consulta de padrón electoral | ELecciones Consejo de la Magistratura</title>
 
     <meta
         name="description"
         content="Consulta individual de lugar de votación."
     >
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
