@@ -735,3 +735,75 @@ input {
     }
 
 }
+
+/* =========================================================
+   ACCIONES DEL RESULTADO
+   ========================================================= */
+
+.result-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 24px;
+}
+
+.pdf-button,
+.new-search {
+    min-height: 48px;
+    padding: 0 22px;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        border-color .2s ease;
+}
+
+.pdf-button {
+    border: 1px solid var(--primary);
+
+    background: var(--primary);
+    color: #fff;
+}
+
+.pdf-button:hover {
+    background: var(--primary-hover);
+}
+
+.new-search {
+    margin: 0;
+
+    border: 1px solid var(--primary);
+
+    background: transparent;
+    color: var(--primary);
+}
+
+.new-search:hover {
+    background: var(--primary);
+    color: #fff;
+
+    text-decoration: none;
+}
+
+
+@media (max-width: 600px) {
+
+    .result-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pdf-button,
+    .new-search {
+        width: 100%;
+    }
+
+}

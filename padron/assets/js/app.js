@@ -259,13 +259,25 @@ function mostrarResultado(data) {
         </div>
 
 
-        <button
-            type="button"
-            class="new-search"
-            id="new-search"
-        >
-            ← Nueva consulta
-        </button>
+        <div class="result-actions">
+
+            <button
+                type="button"
+                class="pdf-button"
+                id="download-pdf"
+            >
+                Descargar constancia (PDF)
+            </button>
+
+            <button
+                type="button"
+                class="new-search"
+                id="new-search"
+            >
+                Hacer otra consulta
+            </button>
+
+        </div>
     `;
 
 
@@ -285,6 +297,19 @@ function mostrarResultado(data) {
             dniInput.focus();
 
         });
+
+        document
+            .getElementById('download-pdf')
+            .addEventListener('click', () => {
+
+                descargarConstancia({
+                    dni: dniInput.value.trim(),
+                    apellidoNombre: data.apellidoNombre,
+                    colegio: data.colegio,
+                    direccionVotacion: data.direccionVotacion
+                });
+
+            });
 
 }
 
@@ -331,5 +356,179 @@ function escapeHTML(valor) {
     div.textContent = valor ?? '';
 
     return div.innerHTML;
+
+}
+
+// =========================================================
+// DESCARGAR CONSTANCIA PDF
+// =========================================================
+
+function descargarConstancia(datos) {
+
+    // jsPDF fue cargado antes que app.js en index.php
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+
+    // =====================================================
+    // FECHA
+    // =====================================================
+
+    const fecha = new Intl.DateTimeFormat('es-AR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(new Date());
+
+
+    // =====================================================
+    // COLORES
+    // =====================================================
+
+    const azul = [24, 44, 61];
+    const gris = [95, 95, 95];
+    const negro = [25, 25, 25];
+    const celeste = [32, 184, 223];
+
+
+    // =====================================================
+    // TÍTULO
+    // =====================================================
+
+    doc.setTextColor(...azul);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+
+    doc.text(
+        'Constancia de lugar de votación',
+        20,
+        28
+    );
+
+
+    // Línea celeste debajo del título
+
+    doc.setDrawColor(...celeste);
+    doc.setLineWidth(0.7);
+
+    doc.line(
+        20,
+        32,
+        82,
+        32
+    );
+
+
+    // =====================================================
+    // INFORMACIÓN GENERAL
+    // =====================================================
+
+    doc.setTextColor(...gris);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+
+    doc.text(
+        'Elecciones del Consejo de la Magistratura de la Nación',
+        20,
+        43
+    );
+
+    doc.text(
+        `Emitido el ${fecha}`,
+        20,
+        49
+    );
+
+
+    // =====================================================
+    // FUNCIÓN AUXILIAR PARA LOS DATOS
+    // =====================================================
+
+    function agregarDato(label, valor, y) {
+
+        doc.setTextColor(...azul);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+
+        doc.text(
+            label.toUpperCase(),
+            20,
+            y
+        );
+
+
+        doc.setTextColor(...negro);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+
+        doc.text(
+            String(valor || '-'),
+            20,
+            y + 6
+        );
+
+    }
+
+
+    // =====================================================
+    // DATOS DEL RESULTADO
+    // =====================================================
+
+    agregarDato(
+        'Elector/a',
+        datos.apellidoNombre,
+        67
+    );
+
+    agregarDato(
+        'Documento',
+        datos.dni,
+        83
+    );
+
+    agregarDato(
+        'Colegio',
+        datos.colegio,
+        99
+    );
+
+    agregarDato(
+        'Dónde votás',
+        datos.direccionVotacion,
+        115
+    );
+
+
+    // =====================================================
+    // PIE DE PÁGINA
+    // =====================================================
+
+    doc.setTextColor(125, 125, 125);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+
+    doc.text(
+        'Documento informativo, sin validez oficial. Herramienta independiente de consulta electoral.',
+        20,
+        278
+    );
+
+    doc.text(
+        'Los datos personales son tratados conforme a la Ley Nº 25.326 de Protección de los Datos Personales.',
+        20,
+        283
+    );
+
+
+    // =====================================================
+    // DESCARGA
+    // =====================================================
+
+    doc.save('constancia-lugar-votacion.pdf');
 
 }
