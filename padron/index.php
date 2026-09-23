@@ -23,19 +23,37 @@ declare(strict_types=1);
 
 <main class="site">
 
-    <header class="header">
-        <div class="brand">
-            <span class="brand-kicker">ELECCIONES</span>
+<header class="header">
 
-            <span class="brand-title">
-                CONSEJO DE LA MAGISTRATURA
+    <div class="header-inner">
+
+        <div class="site-brand">
+            <img
+                src="assets/img/logo-infojuridica.png"
+                alt="Info Jurídica"
+                class="site-logo"
+            >
+        </div>
+
+        <div class="election-brand">
+
+            <span class="brand-kicker">
+                ELECCIONES
             </span>
+
+            <strong class="brand-title">
+                CONSEJO DE LA MAGISTRATURA
+            </strong>
 
             <span class="brand-country">
                 DE LA NACIÓN
             </span>
+
         </div>
-    </header>
+
+    </div>
+
+</header>
 
 
     <section class="hero">
