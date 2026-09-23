@@ -176,8 +176,8 @@ declare(strict_types=1);
 
 </main>
 
-<script src="assets/js/jspdf.umd.min.js"></script>
-<script src="assets/js/app.js"></script>
+<script src="assets/js/jspdf.umd.min.js?v=1"></script>
+<script src="assets/js/app.js?v=2"></script>
 
 </body>
 </html>
