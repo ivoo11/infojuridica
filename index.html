@@ -11,6 +11,9 @@
         content="Actualidad, justicia, elecciones, profesión y herramientas para la comunidad jurídica argentina."
     >
 
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="apple-touch-icon" href="assets/img/favicon.png">
+
     <!-- TIPOGRAFÍAS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -122,21 +125,17 @@
             gap: 18px;
         }
 
-        .brand-mark {
-            width: 50px;
-            height: 68px;
-            flex: none;
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .brand-name {
-            font-family: var(--serif);
-            font-size: 40px;
-            line-height: .86;
-            letter-spacing: -.035em;
-        }
-
-        .brand-name span {
+        .brand-logo {
             display: block;
+            width: auto;
+            height: 88px;
+            object-fit: contain;
         }
 
         .mobile-menu {
@@ -1368,13 +1367,8 @@
                 padding: 22px 0;
             }
 
-            .brand-mark {
-                width: 36px;
-                height: 48px;
-            }
-
-            .brand-name {
-                font-size: 28px;
+            .brand-logo {
+                height: 68px;
             }
 
             .main-nav {
@@ -1523,20 +1517,12 @@
 <header class="masthead">
     <div class="container masthead-inner">
 
-        <a class="brand" href="#">
-
-            <svg class="brand-mark" viewBox="0 0 80 110" aria-hidden="true">
-                <rect x="19" y="2" width="42" height="14" fill="#111"/>
-                <path d="M18 24H62L72 51L40 103L8 51Z" fill="#111"/>
-                <circle cx="40" cy="54" r="6" fill="#F6F3EC"/>
-                <path d="M37 59H43L40 94Z" fill="#F6F3EC"/>
-            </svg>
-
-            <div class="brand-name">
-                <span>INFO</span>
-                <span>JURÍDICA</span>
-            </div>
-
+        <a class="brand" href="/" aria-label="Info Jurídica - Inicio">
+            <img
+                src="assets/img/logo-infojuridica.png"
+                alt="Info Jurídica"
+                class="brand-logo"
+            >
         </a>
 
         <button class="mobile-menu">

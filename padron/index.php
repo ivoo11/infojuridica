@@ -16,7 +16,7 @@ declare(strict_types=1);
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260923-1">
 </head>
 
 <body>
