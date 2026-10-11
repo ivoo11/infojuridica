@@ -31,7 +31,7 @@ function ij_subscription_request(string $email, string $remote, string $version=
         $s=$db->prepare('SELECT id,status FROM newsletter_subscribers WHERE email=? FOR UPDATE');$s->execute([$email]);$subscriber=$s->fetch();
         if ($subscriber['status']!=='active') {
             $s=$db->prepare('DELETE FROM newsletter_unsubscribe_tokens WHERE subscriber_id=?');$s->execute([$subscriber['id']]);
-            $s=$db->prepare("UPDATE newsletter_subscribers SET status='pending',requested_at=UTC_TIMESTAMP(),confirmed_at=NULL WHERE id=?");$s->execute([$subscriber['id']]);
+            $s=$db->prepare("UPDATE newsletter_subscribers SET status='active',requested_at=UTC_TIMESTAMP(),confirmed_at=NULL WHERE id=?");$s->execute([$subscriber['id']]);
             $s=$db->prepare('INSERT INTO newsletter_consents(subscriber_id,consent_version,consent_text,source) VALUES(?,?,?,?)');
             $s->execute([$subscriber['id'],$version,ij_subscription_consent($version),$version==='2026-10-11-button' ? 'portal-banner' : 'portal-form']);
         }
@@ -42,7 +42,7 @@ function ij_subscription_request(string $email, string $remote, string $version=
 function ij_subscription_unsubscribe_url(int $subscriberId): string {
     ij_subscriptions_ready();
     $s=ij_db()->prepare("SELECT id FROM newsletter_subscribers WHERE id=? AND status='active'");$s->execute([$subscriberId]);
-    if (!$s->fetchColumn()) throw new InvalidArgumentException('El suscriptor no está confirmado para recibir correos.');
+    if (!$s->fetchColumn()) throw new InvalidArgumentException('El suscriptor no está activo para recibir correos.');
     $token=bin2hex(random_bytes(32));
     $s=ij_db()->prepare('INSERT INTO newsletter_unsubscribe_tokens(token_hash,subscriber_id) VALUES(?,?)');$s->execute([hash('sha256',$token),$subscriberId]);
     return 'https://infojuridica.com.ar/newsletter-baja.php?token='.$token;

@@ -118,28 +118,8 @@ Esta etapa NO envía correos: no hay botón de envío, conexión SMTP, programac
 
 ## Solicitudes de suscripción y consentimiento
 
-El bloque compartido antes del footer abre /newsletter.php. No se muestra un popup. El formulario exige email válido y una casilla no premarcada. La respuesta deja claro que la solicitud queda pendiente y que el correo de confirmación se enviará cuando se conecte el servicio. No se confirma la propiedad del correo por completar el formulario y no se lo habilita para envíos.
+El banner compartido permite ingresar el correo y suscribirse en la misma página. El botón expresa la aceptación del texto visible; se registra su versión y fecha. El alta deja al suscriptor activo inmediatamente y muestra «Ya estás suscripto». No se envía un correo de confirmación ni se verifica la propiedad de la dirección. Repetir el alta no duplica el registro.
 
-Al ingresar una solicitud se crean automáticamente las tablas de database/newsletter-subscribers.sql, sin reemplazar las tablas existentes. newsletter_subscribers guarda email único, estado pending, fecha de solicitud y campos reservados para confirmación y baja. newsletter_consents registra cada aceptación de una solicitud pendiente con versión 2026-10-11, texto exacto, origen portal-form y fecha UTC. Repetir una solicitud no duplica al suscriptor ni borra las aceptaciones anteriores. Una solicitud nueva después de una baja nunca vuelve a activar directamente el correo.
+La baja automática utiliza un enlace personal incluido en cada correo. GET muestra la confirmación y POST registra la baja; también admite List-Unsubscribe=One-Click. El historial de consentimiento se conserva. Una nueva suscripción voluntaria vuelve a activar la dirección e invalida los enlaces de baja anteriores.
 
-Protecciones: token de formulario, cookie de sesión separada del administrador, campo trampa y límite de cinco solicitudes válidas por IP/hora. La dirección IP no se almacena en texto: se usa una huella temporal para limitar solicitudes, eliminada tras dos horas. La aceptación no reemplaza la verificación del correo.
-
-Newsletter → Ver suscriptores muestra hasta 50 por página y requiere sesión de editor. No permite activar manualmente solicitudes sin confirmación. Pendientes: envío de confirmación, enlace con token y vencimiento, baja personal y envío SMTP. No iniciar campañas con correos pending. Antes de enviar también debe completarse la información de privacidad y contacto aplicable al servicio.
-
-
-### Formulario integrado en el banner (versión vigente)
-
-El banner compartido permite ingresar email y pulsar Suscribirme sin navegar a otra página. El texto junto al botón explicita la autorización de recibir el newsletter y la posibilidad de darse de baja. No hay casilla en este banner; el formulario independiente conserva su aceptación por casilla como alternativa sin JavaScript.
-
-El envío del banner obtiene un token de sesión no cacheable de /newsletter.php?token=1 y registra la solicitud con respuesta JSON en la misma página. No se incluyen tokens de sesión en el HTML de páginas que puedan cachearse. Se mantienen validación, protección de formulario, campo trampa y límite de solicitudes.
-
-El consentimiento del banner tiene versión 2026-10-11-button y origen portal-banner; se guarda el texto exacto visible. Los consentimientos previos conservan su versión y texto. Las solicitudes siguen pendientes de confirmar: no se emiten correos todavía. La baja automática mediante enlace personal deberá integrarse antes del envío. El aviso junto al botón no sustituye la información del responsable de datos y sus canales de contacto; esos datos todavía no fueron suministrados. Esta implementación técnica no constituye una certificación de cumplimiento legal.
-
-
-### Baja automática
-
-newsletter-baja.php acepta un enlace personal con token aleatorio de 256 bits. MySQL guarda solo su SHA-256. GET muestra una confirmación sin alterar la suscripción para evitar bajas por escáneres de correo; POST confirma la baja sin sesión ni intervención del administrador. El mismo token permite repetir la operación sin modificar la primera fecha de baja. El endpoint admite también POST List-Unsubscribe=One-Click. Cabecera Referrer-Policy no-referrer evita transmitir el token al cargar recursos.
-
-ij_newsletter_email(editionId,subscriberId) produce HTML de correo sin controles de preview, con un enlace personal de baja y los valores de List-Unsubscribe y List-Unsubscribe-Post para el futuro transportista SMTP. Rechaza suscriptores no activos y ediciones con publicaciones que ya no están disponibles. La preview editorial no genera enlaces reales de suscriptores. No existe aún un worker de envío SMTP; las cabeceras deben adjuntarse al envío y firmarse según los requisitos del proveedor/cliente para que pueda ofrecer One-Click.
-
-La baja marca status=unsubscribed y unsubscribed_at, conserva el historial de aceptación y no elimina el email del registro de exclusión. Una nueva solicitud vuelve a pending, invalida los enlaces anteriores y exige otra confirmación antes de futuros envíos. El proceso de confirmación de altas y la conexión SMTP siguen pendientes.
+Newsletter → Ver suscriptores permite activar solicitudes antiguas pendientes únicamente si tienen consentimiento registrado. Los envíos comprueban el estado activo antes de entregar cada correo. Para configurar SMTP, previsualizar, enviar una prueba y preparar una edición, consultar [newsletter-envios.md](newsletter-envios.md). La información del responsable de datos y contacto todavía debe completarse.
