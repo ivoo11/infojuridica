@@ -125,3 +125,12 @@ Al ingresar una solicitud se crean automáticamente las tablas de database/newsl
 Protecciones: token de formulario, cookie de sesión separada del administrador, campo trampa y límite de cinco solicitudes válidas por IP/hora. La dirección IP no se almacena en texto: se usa una huella temporal para limitar solicitudes, eliminada tras dos horas. La aceptación no reemplaza la verificación del correo.
 
 Newsletter → Ver suscriptores muestra hasta 50 por página y requiere sesión de editor. No permite activar manualmente solicitudes sin confirmación. Pendientes: envío de confirmación, enlace con token y vencimiento, baja personal y envío SMTP. No iniciar campañas con correos pending. Antes de enviar también debe completarse la información de privacidad y contacto aplicable al servicio.
+
+
+### Formulario integrado en el banner (versión vigente)
+
+El banner compartido permite ingresar email y pulsar Suscribirme sin navegar a otra página. El texto junto al botón explicita la autorización de recibir el newsletter y la posibilidad de darse de baja. No hay casilla en este banner; el formulario independiente conserva su aceptación por casilla como alternativa sin JavaScript.
+
+El envío del banner obtiene un token de sesión no cacheable de /newsletter.php?token=1 y registra la solicitud con respuesta JSON en la misma página. No se incluyen tokens de sesión en el HTML de páginas que puedan cachearse. Se mantienen validación, protección de formulario, campo trampa y límite de solicitudes.
+
+El consentimiento del banner tiene versión 2026-10-11-button y origen portal-banner; se guarda el texto exacto visible. Los consentimientos previos conservan su versión y texto. Las solicitudes siguen pendientes de confirmar: no se emiten correos todavía. La baja automática mediante enlace personal deberá integrarse antes del envío. El aviso junto al botón no sustituye la información del responsable de datos y sus canales de contacto; esos datos todavía no fueron suministrados. Esta implementación técnica no constituye una certificación de cumplimiento legal.

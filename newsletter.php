@@ -6,16 +6,21 @@ if (!ij_live()) { http_response_code(503);exit('La suscripción todavía no est�
 ini_set('session.use_strict_mode','1');ini_set('session.use_only_cookies','1');
 session_name('ij_newsletter');session_set_cookie_params(['lifetime'=>0,'path'=>'/newsletter.php','secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS']!=='off','httponly'=>true,'samesite'=>'Lax']);session_start();
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
+$json=str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json');
+function ij_signup_json(array $data,int $code=200): never { http_response_code($code);header('Content-Type: application/json; charset=utf-8');echo json_encode($data,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);exit; }
+if ($json && $_SERVER['REQUEST_METHOD']==='GET' && isset($_GET['token'])) ij_signup_json(['csrf'=>$_SESSION['csrf']]);
 $error='';$email='';$accepted=false;
 if ($_SERVER['REQUEST_METHOD']==='POST') {
-    if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf'],$_POST['csrf'])) { http_response_code(403);exit('Volvé a cargar el formulario para continuar.'); }
+    if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf'],$_POST['csrf'])) { if ($json) ij_signup_json(['message'=>'Volvé a cargar el formulario para continuar.'],403);http_response_code(403);exit('Volvé a cargar el formulario para continuar.'); }
     try {
         $email=ij_subscription_email($_POST);$accepted=($_POST['consent'] ?? '')==='1';
         if (!empty($_POST['website'])) throw new InvalidArgumentException('No pudimos registrar la solicitud.');
-        ij_subscription_request($email,$_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        $version=is_string($_POST['consent_version'] ?? null) ? $_POST['consent_version'] : '2026-10-11';
+        ij_subscription_request($email,$_SERVER['REMOTE_ADDR'] ?? 'unknown',$version);
+        if ($json) ij_signup_json(['message'=>'Registramos tu solicitud. Cuando habilitemos los envíos, te llegará un correo para confirmarla.']);
         $_SESSION['signup_success']=true;$_SESSION['csrf']=bin2hex(random_bytes(32));
         header('Location: /newsletter.php?registrado=1',true,303);exit;
-    } catch (InvalidArgumentException $e) { $error=$e->getMessage(); $email=is_string($_POST['email'] ?? null) ? substr($_POST['email'],0,190) : ''; }
+    } catch (InvalidArgumentException $e) { if ($json) ij_signup_json(['message'=>$e->getMessage()],422);$error=$e->getMessage(); $email=is_string($_POST['email'] ?? null) ? substr($_POST['email'],0,190) : ''; }
 }
 $success=isset($_GET['registrado']) && !empty($_SESSION['signup_success']);unset($_SESSION['signup_success']);
 $noticia=['titulo'=>'Suscribirse al newsletter','bajada'=>'Noticias y próximas actividades en tu correo.'];$isPreview=true;$hideNewsletterSignup=true;require __DIR__.'/includes/listing-head.php';require __DIR__.'/includes/header.php';
