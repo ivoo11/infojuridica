@@ -52,17 +52,22 @@
 .agenda-track .agenda-copy { min-width: 0; }
 .agenda-track .agenda-copy h3 {
     line-height: 1.25;
-    height: 3.75em;
+    height: auto;
     margin: 0;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     overflow: hidden;
 }
-.agenda-track .agenda-place { display: grid; grid-template-rows: 18px 18px 39px; gap: 8px; margin-top: 16px; }
+.agenda-track .agenda-place { display: grid; grid-template-rows: 18px 18px 39px; gap: 8px; margin-top: 10px; }
 .agenda-track .agenda-place p { margin: 0; min-width: 0; }
 .agenda-track .agenda-dates,
 .agenda-track .agenda-venue { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .agenda-track .agenda-hours { white-space: nowrap; }
 
 .agenda-track .agenda-dates { -webkit-line-clamp: 1; }
+
+.home-section-more { margin-top: 28px; text-align: center; }
+.home-section-more a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 20px; border: 1px solid var(--gray-light); font-size: 13px; }
+.home-section-more a:hover { border-color: var(--burgundy); color: var(--burgundy); }
+.home-section-more a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; }

@@ -3,6 +3,12 @@
     const previous = document.getElementById('agendaPrevious');
     const next = document.getElementById('agendaNext');
     if (!track || !previous || !next) return;
+    const alignTitles = () => {
+        const titles = [...track.querySelectorAll('.agenda-copy h3')];
+        titles.forEach(title => { title.style.height = 'auto'; });
+        const height = Math.max(0, ...titles.map(title => title.getBoundingClientRect().height));
+        titles.forEach(title => { title.style.height = `${height}px`; });
+    };
     const update = () => {
         previous.disabled = track.scrollLeft <= 1;
         next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
@@ -15,6 +21,8 @@
     previous.addEventListener('click', () => move(-1));
     next.addEventListener('click', () => move(1));
     track.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
+    window.addEventListener('resize', () => { alignTitles(); update(); });
+    alignTitles();
+    if (document.fonts) document.fonts.ready.then(alignTitles);
     update();
 })();
