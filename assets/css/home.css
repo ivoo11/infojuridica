@@ -40,3 +40,10 @@
 
 .home-agenda .agenda-all-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
 .home-agenda .agenda-all-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
+
+/* Agenda: fechas, horarios y sede con jerarquías propias. */
+.agenda-track .agenda-place { margin-top: 12px; }
+.agenda-dates { color: var(--ink); font-size: 12px; font-weight: 600; line-height: 1.5; }
+.agenda-hours { color: var(--ink); font-size: 12px; line-height: 1.5; margin-top: 4px; }
+.agenda-hours a { text-decoration: underline; text-underline-offset: 3px; }
+.agenda-venue { color: var(--gray); font-size: 12px; line-height: 1.6; margin-top: 12px; }

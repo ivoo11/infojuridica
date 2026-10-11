@@ -84,3 +84,26 @@ function ij_event_schedule_label(array $event): string {
     $days=ij_event_days($event);
     return $days ? implode(' / ',array_map('ij_event_day_label',$days)) : 'Fecha por confirmar';
 }
+
+function ij_event_card_schedule(array $days): array {
+    if (!$days) return ['dates'=>'','hours'=>''];
+    $first=new DateTimeImmutable($days[0]['event_date']);
+    $last=new DateTimeImmutable($days[count($days)-1]['event_date']);
+    $sameMonth=$first->format('Y-m')===$last->format('Y-m');
+    $consecutive=true;
+    foreach ($days as $i=>$day) if ($i && (new DateTimeImmutable($days[$i-1]['event_date']))->modify('+1 day')->format('Y-m-d')!==$day['event_date']) $consecutive=false;
+    if ($sameMonth) {
+        $numbers=array_map(fn($d)=>(string)(int)substr($d['event_date'],8,2),$days);
+        if (count($days)>2 && $consecutive) $date=$numbers[0].'–'.$numbers[count($numbers)-1];
+        elseif (count($days)>1) { $tail=array_pop($numbers);$date=implode(', ',$numbers).' y '.$tail; }
+        else $date=$numbers[0];
+        $date.=' '.substr(ij_date($days[0]['event_date']),3);
+    } else $date=implode(' · ',array_map(fn($d)=>ij_date($d['event_date']),$days));
+    $times=array_unique(array_map(fn($d)=>$d['start_time'].'|'.$d['end_time'],$days));
+    if (count($times)>1) $hours='Ver horarios por jornada';
+    else {
+        $start=$days[0]['start_time'];$end=$days[0]['end_time'];
+        $hours=$start ? ($end ? $start.' a '.$end : 'Desde las '.$start) : ($end ? 'Hasta las '.$end : '');
+    }
+    return ['dates'=>count($days)>1 ? $date : '', 'hours'=>$hours];
+}
