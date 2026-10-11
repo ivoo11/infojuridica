@@ -8,10 +8,21 @@
         facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url.href)}`
     };
     document.querySelectorAll('[data-share]').forEach(link => { link.href = destinations[link.dataset.share]; });
-    document.querySelector('#copyLink').addEventListener('click', async () => {
+    document.querySelector('#shareArticle').addEventListener('click', async () => {
         const status = document.querySelector('#shareStatus');
         const fallback = document.querySelector('#copyFallback');
         const input = document.querySelector('#copyFallbackInput');
+        status.textContent = '';
+        fallback.hidden = true;
+        if (typeof navigator.share === 'function') {
+            try {
+                await navigator.share({ title, url: url.href });
+                return;
+            } catch (error) {
+                // Closing the device's chooser is intentional, not a copy request.
+                if (error.name === 'AbortError') return;
+            }
+        }
         try {
             await navigator.clipboard.writeText(url.href);
             fallback.hidden = true;

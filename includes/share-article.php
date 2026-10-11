@@ -16,9 +16,9 @@
             <svg class="share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M14 22v-9h3l.5-3H14V8c0-.9.3-1.5 1.6-1.5H18V3.3c-.7-.1-1.9-.3-3.2-.3-3.1 0-5 1.9-5 5V10H7v3h2.8v9H14Z"/></svg>
             <span>Facebook</span>
         </a>
-        <button type="button" id="copyLink">
-            <svg class="share-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M15 5V4H4v11h1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>Copiar enlace</span>
+        <button type="button" id="shareArticle">
+            <svg class="share-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M12 15V3m0 0L7 8m5-5 5 5M5 13v7h14v-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Compartir</span>
         </button>
     </div>
     <p id="shareStatus" role="status" aria-live="polite"></p>
