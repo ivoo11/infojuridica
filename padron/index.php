@@ -14,7 +14,7 @@ declare(strict_types=1);
         content="Consulta individual de lugar de votación."
     >
 
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <?php require __DIR__ . '/../includes/favicon.php'; ?>
 
     <link rel="stylesheet" href="assets/css/styles.css?v=20260923-1">
 </head>

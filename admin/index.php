@@ -1,0 +1,10 @@
+<?php
+require __DIR__.'/../app/admin.php';$user=ij_require_user();require __DIR__.'/../app/home-slots.php';$homeSlots=ij_home_slots();
+$posts=ij_db()->query('SELECT p.*,c.name category_name FROM posts p JOIN categories c ON c.id=p.category_id ORDER BY updated_at DESC,id DESC')->fetchAll();
+$pageTitle='Publicaciones';require __DIR__.'/_head.php';
+?>
+<div class="toolbar"><p>Noticias y columnas de opinión. Los borradores solo se ven desde el panel.</p><a class="button primary" href="/admin/editar.php">Nueva publicación</a></div>
+<?php if (isset($_GET['guardado'])): ?><p class="success" role="status"><?= ij_e(['borrador'=>'Borrador guardado. Solo lo podés ver desde el panel.','publicada'=>'Publicación visible en el portal.','actualizada'=>'Cambios guardados.','programada'=>'Publicación programada.'][is_string($_GET['guardado']) ? $_GET['guardado'] : ''] ?? 'Publicación guardada.') ?></p><?php endif; ?>
+<?php if (!$posts): ?><p class="empty">Todavía no hay publicaciones. Creá la primera noticia para comenzar.</p><?php endif; ?>
+<div class="post-list"><?php foreach ($posts as $p): $postSlot=array_search((int)$p['id'],$homeSlots,true); ?><article class="post-row"><div><span class="tag"><?= $p['type']==='opinion' ? 'Opinión' : ij_e($p['category_name']) ?></span><h2><a href="/admin/editar.php?id=<?= $p['id'] ?>"><?= ij_e($p['title']) ?></a></h2><p><?= $p['status']==='draft' ? 'Borrador' : ($p['published_at']>ij_now() ? 'Programada · '.ij_date($p['published_at']) : 'Publicada · '.ij_date($p['published_at'])) ?><?= $postSlot!==false ? ' · '.ij_e(ij_slot_names()[$postSlot]).($p['status']!=='published' || $p['published_at']>ij_now() ? ' (oculta)' : '') : '' ?><?= $p['in_context'] ? ' · En contexto' : '' ?></p></div><div class="post-actions"><a class="button primary" href="/admin/editar.php?id=<?= $p['id'] ?>">Editar</a><a class="button" href="/admin/preview.php?id=<?= $p['id'] ?>" target="_blank" rel="noopener">Vista previa</a></div></article><?php endforeach; ?></div>
+<?php require __DIR__.'/_foot.php'; ?>

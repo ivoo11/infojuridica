@@ -1,0 +1,88 @@
+-- MySQL 8 / MariaDB 10.6+. Importar en una base vacía con phpMyAdmin.
+CREATE TABLE users (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ email VARCHAR(190) NOT NULL UNIQUE,
+ name VARCHAR(120) NOT NULL,
+ password_hash VARCHAR(255) NOT NULL,
+ active TINYINT NOT NULL DEFAULT 1,
+ created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE categories (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ slug VARCHAR(60) NOT NULL UNIQUE,
+ name VARCHAR(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO categories (slug,name) VALUES ('justicia','Justicia'),('profesion','Profesión'),('colegiatura','Colegiatura'),('universidades','Universidades');
+CREATE TABLE authors (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(120) NOT NULL,
+ role VARCHAR(200) NOT NULL DEFAULT '',
+ photo VARCHAR(255) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE posts (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ type VARCHAR(20) NOT NULL DEFAULT 'news',
+ title VARCHAR(240) NOT NULL,
+ summary TEXT NOT NULL,
+ body MEDIUMTEXT NOT NULL,
+ category_id BIGINT UNSIGNED NOT NULL,
+ author_id BIGINT UNSIGNED NULL,
+ image VARCHAR(255) NOT NULL DEFAULT '',
+ image_alt VARCHAR(240) NOT NULL DEFAULT '',
+ image_caption VARCHAR(500) NOT NULL DEFAULT '',
+ status VARCHAR(20) NOT NULL DEFAULT 'draft',
+ published_at DATETIME NULL,
+ featured TINYINT NOT NULL DEFAULT 0,
+ in_context TINYINT NOT NULL DEFAULT 0,
+ home_order INT NOT NULL DEFAULT 0,
+ created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ CONSTRAINT posts_category FOREIGN KEY (category_id) REFERENCES categories(id),
+ CONSTRAINT posts_author FOREIGN KEY (author_id) REFERENCES authors(id),
+ INDEX public_posts (status,published_at), INDEX home_posts (type,featured,home_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE login_attempts (
+ key_hash CHAR(64) PRIMARY KEY,
+ attempts INT NOT NULL DEFAULT 0,
+ window_start DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS site_settings (
+ setting_key VARCHAR(60) PRIMARY KEY,
+ setting_value TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS post_slugs (
+ slug VARCHAR(180) PRIMARY KEY,
+ post_id BIGINT UNSIGNED NOT NULL,
+ FOREIGN KEY (post_id) REFERENCES posts(id), INDEX slug_post (post_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS post_urls (
+ post_id BIGINT UNSIGNED PRIMARY KEY,
+ slug VARCHAR(180) NOT NULL UNIQUE,
+ FOREIGN KEY (post_id) REFERENCES posts(id),
+ FOREIGN KEY (slug) REFERENCES post_slugs(slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS home_slots (
+ slot_key VARCHAR(20) PRIMARY KEY,
+ post_id BIGINT UNSIGNED NULL,
+ FOREIGN KEY (post_id) REFERENCES posts(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS events (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ title VARCHAR(240) NOT NULL,
+ description MEDIUMTEXT NOT NULL,
+ starts_at DATETIME NULL,
+ ends_at DATETIME NULL,
+ modality VARCHAR(20) NOT NULL DEFAULT 'presencial',
+ place VARCHAR(300) NOT NULL DEFAULT '',
+ registration_url VARCHAR(2000) NOT NULL DEFAULT '',
+ image VARCHAR(255) NOT NULL DEFAULT '',
+ image_alt VARCHAR(240) NOT NULL DEFAULT '',
+ status VARCHAR(20) NOT NULL DEFAULT 'draft',
+ created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ INDEX upcoming_events (status,starts_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS home_slots (
+ slot_key VARCHAR(20) PRIMARY KEY,
+ post_id BIGINT UNSIGNED NULL,
+ FOREIGN KEY (post_id) REFERENCES posts(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

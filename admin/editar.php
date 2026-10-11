@@ -1,0 +1,67 @@
+<?php
+require __DIR__.'/../app/admin.php';$user=ij_require_user();require_once __DIR__.'/../app/slugs.php';ij_slugs_ready();
+$id=filter_var($_GET['id'] ?? 0,FILTER_VALIDATE_INT);if ($id===false || $id<0) { http_response_code(404);exit('Publicación no encontrada.'); }
+$db=ij_db();$categories=$db->query('SELECT * FROM categories ORDER BY id')->fetchAll();$authors=$db->query('SELECT * FROM authors ORDER BY name')->fetchAll();
+$p=['type'=>'news','title'=>'','summary'=>'','body'=>'','category_id'=>$categories[0]['id'],'author_id'=>'','image'=>'','image_alt'=>'','image_caption'=>'','status'=>'draft','published_at'=>null,'featured'=>0,'in_context'=>0,'home_order'=>0];
+if ($id) { $s=$db->prepare('SELECT * FROM posts WHERE id=?');$s->execute([$id]);$p=$s->fetch();if (!$p) { http_response_code(404);exit('Publicación no encontrada.'); } }
+$slugValue='';if ($id) { $s=$db->prepare('SELECT slug FROM post_urls WHERE post_id=?');$s->execute([$id]);$slugValue=$s->fetchColumn() ?: ''; }
+$originalStatus=$p['status'];$originalDate=$p['published_at'];$wasPublic=$originalStatus==='published' && $originalDate && $originalDate<=ij_now();
+$pastDateValue='';
+$error='';$dateValue=$p['published_at'] ? (new DateTimeImmutable($p['published_at'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Argentina/Buenos_Aires'))->format('Y-m-d\TH:i') : '';
+if ($_SERVER['REQUEST_METHOD']==='POST') {
+    ij_check_csrf();$slugValue=ij_field('slug');$dateValue=ij_field('published_at');$pastDateValue=ij_field('backdated_at');
+    foreach (['type','title','summary','body','category_id','author_id','image_alt','image_caption'] as $key) $p[$key]=ij_field($key);
+    $action=ij_field('action');
+    $p['in_context']=isset($_POST['in_context']) ? 1 : 0;
+    try {
+        if (!in_array($action,['draft','publish','update','schedule','backdate'],true) || !in_array($p['type'],['news','opinion'],true)) throw new InvalidArgumentException('Seleccioná una acción y un tipo válidos.');
+        if ($action==='update' && (!$id || $originalStatus!=='published')) throw new InvalidArgumentException('Esta publicación todavía no está publicada. Elegí guardar borrador o publicar ahora.');
+        $p['status']=$action==='draft' ? 'draft' : 'published';
+        if (!$p['title'] || mb_strlen($p['title'])>240 || mb_strlen($p['summary'])>1000 || mb_strlen($p['body'])>100000) throw new InvalidArgumentException('Agregá un título. Límites: título 240 caracteres, bajada 1000 y cuerpo 100.000.');
+        if ($p['status']==='published' && (!$p['summary'] || !$p['body'])) throw new InvalidArgumentException('Para publicar, completá la bajada y el cuerpo. Podés guardar un borrador aunque estén pendientes.');
+        if (mb_strlen($p['image_alt'])>240 || mb_strlen($p['image_caption'])>500) throw new InvalidArgumentException('El texto alternativo admite 240 caracteres y el epígrafe 500.');
+        if (!in_array((string)$p['category_id'],array_map(fn($c)=>(string)$c['id'],$categories),true)) throw new InvalidArgumentException('Seleccioná una categoría válida.');
+        if ($p['author_id']!=='' && !in_array((string)$p['author_id'],array_map(fn($a)=>(string)$a['id'],$authors),true)) throw new InvalidArgumentException('Seleccioná un autor válido.');
+        if ($p['status']==='published' && $p['type']==='opinion' && $p['author_id']==='') throw new InvalidArgumentException('Las columnas de opinión necesitan un autor.');
+        if ($action==='schedule') {
+            $d=DateTimeImmutable::createFromFormat('!Y-m-d\TH:i',$dateValue,new DateTimeZone('America/Argentina/Buenos_Aires'));
+            if (!$d || $d->format('Y-m-d\TH:i')!==$dateValue || $d->getTimestamp()<=time()) throw new InvalidArgumentException('Para programar, elegí una fecha y hora futuras.');
+            $p['published_at']=$d->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        } elseif ($action==='backdate') {
+            $d=DateTimeImmutable::createFromFormat('!Y-m-d\TH:i',$pastDateValue,new DateTimeZone('America/Argentina/Buenos_Aires'));
+            if (!$d || $d->format('Y-m-d\TH:i')!==$pastDateValue || $d->getTimestamp()>time()) throw new InvalidArgumentException('Elegí una fecha y hora anteriores o actuales. Para una fecha futura, usá Programar publicación.');
+            $p['published_at']=$d->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        } elseif ($action==='publish') $p['published_at']=$wasPublic ? $originalDate : ij_now();
+        else $p['published_at']=$originalDate;
+        $image=ij_upload('image');if ($image) $p['image']=$image;
+        if ($p['status']==='published' && $p['type']==='news' && !$p['image']) throw new InvalidArgumentException('Agregá una imagen antes de publicar la noticia.');
+        $keys=['type','title','summary','body','category_id','author_id','image','image_alt','image_caption','status','published_at','in_context'];
+        $values=array_map(fn($k)=>$k==='author_id' && $p[$k]==='' ? null : $p[$k],$keys);
+        if ($id) { $s=$db->prepare('UPDATE posts SET '.implode(',',array_map(fn($k)=>$k.'=?',$keys)).',updated_at=UTC_TIMESTAMP() WHERE id=?');$values[]=$id; }
+        else $s=$db->prepare('INSERT INTO posts ('.implode(',',$keys).') VALUES ('.implode(',',array_fill(0,count($keys),'?')).')');
+        $db->beginTransaction();
+        $s->execute($values);
+        $savedId=$id ?: (int)$db->lastInsertId();
+        ij_assign_slug($savedId,$p['title'],$slugValue);$db->commit();
+        $notice=['draft'=>'borrador','publish'=>'publicada','update'=>'actualizada','schedule'=>'programada','backdate'=>'publicada'][$action];
+        header('Location: /admin/?guardado='.$notice);exit;
+    } catch (InvalidArgumentException $e) { if ($db->inTransaction()) $db->rollBack();$error=$e->getMessage(); }
+}
+$pageTitle=$id ? 'Editar publicación' : 'Nueva publicación';require __DIR__.'/_head.php';
+?>
+<form class="editor" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?= ij_csrf() ?>">
+<?php if ($error): ?><p class="error" role="alert"><?= ij_e($error) ?></p><?php endif; ?>
+<div class="form-grid"><label>Tipo<select name="type"><option value="news" <?= $p['type']==='news'?'selected':'' ?>>Noticia</option><option value="opinion" <?= $p['type']==='opinion'?'selected':'' ?>>Columna de opinión</option></select></label><label>Categoría<select name="category_id"><?php foreach ($categories as $c): ?><option value="<?= $c['id'] ?>" <?= $p['category_id']==$c['id']?'selected':'' ?>><?= ij_e($c['name']) ?></option><?php endforeach; ?></select></label></div>
+<label>Título<input name="title" value="<?= ij_e($p['title']) ?>" maxlength="240" required></label>
+<details><summary>Enlace de la publicación</summary><label>Slug<input name="slug" value="<?= ij_e($slugValue) ?>" maxlength="180" placeholder="Se genera automáticamente desde el título"><span class="help">Por ejemplo: biglieri-presento-sus-propuestas. Sin espacios ni tildes. Al editar el título se conserva el enlace. Si cambiás el slug, el enlace anterior redirige al nuevo.</span></label></details>
+<label>Bajada<textarea name="summary" rows="3" maxlength="1000"><?= ij_e($p['summary']) ?></textarea></label>
+<div class="body-editor"><label for="articleBody">Cuerpo</label><div class="editor-tools" role="group" aria-label="Formato del texto"><button type="button" data-format="quote">Cita destacada</button><button type="button" data-format="heading">Subtítulo</button><button type="button" data-format="paragraph">Párrafo</button></div><textarea id="articleBody" name="body" rows="14" maxlength="100000"><?= ij_e($p['body']) ?></textarea><p class="help">Seleccioná un párrafo y elegí su formato. Las citas se muestran con la línea roja del diseño.</p><details id="bodyPreview"><summary>Ver formato del texto</summary><div id="bodyPreviewContent" class="editor-body-preview"></div></details></div>
+<label>Autor<select name="author_id"><option value="">Redacción INFO JURÍDICA</option><?php foreach ($authors as $a): ?><option value="<?= $a['id'] ?>" <?= $p['author_id']==$a['id']?'selected':'' ?>><?= ij_e($a['name']) ?></option><?php endforeach; ?></select><span class="help">Obligatorio para Opinión. Podés cargarlo en <a href="/admin/autores.php">Autores</a>.</span></label>
+<fieldset><legend>Imagen de la publicación</legend><?php if ($p['image']): ?><img class="image-preview" src="<?= ij_e($p['image']) ?>" alt="Imagen actual"><?php endif; ?><label>Subir o reemplazar imagen<input type="file" name="image" accept="image/jpeg,image/png,image/webp"><span class="help">JPG, PNG o WebP. Hasta 5 MB y 20 megapíxeles. Se optimiza al guardar.</span></label><label>Descripción de la imagen<input name="image_alt" maxlength="240" value="<?= ij_e($p['image_alt']) ?>"></label><label>Epígrafe y crédito<input name="image_caption" maxlength="500" value="<?= ij_e($p['image_caption']) ?>"></label></fieldset>
+<fieldset><legend>Dónde aparece en el portal</legend><p>Todas las noticias publicadas aparecen en Últimas noticias por fecha. La principal y las tres laterales se eligen por separado en <a href="/admin/portada.php" target="_blank" rel="noopener">Portada</a>; publicar una noticia nueva no cambia esa selección.</p><label class="check"><input type="checkbox" name="in_context" <?= $p['in_context']?'checked':'' ?>>Incluir también en En contexto</label><p class="help">Para guías y notas explicativas. Las columnas aparecen en Opinión.</p></fieldset>
+<section class="publish-panel" aria-labelledby="publishTitle"><h2 id="publishTitle"><?= $originalStatus==='published' ? 'Guardar la edición' : '¿Qué querés hacer con esta publicación?' ?></h2><p><?= $wasPublic ? 'Está publicada. Guardar cambios actualiza la nota sin cambiar su fecha original.' : ($originalStatus==='published' ? 'Está programada. Guardar cambios conserva su fecha de publicación.' : 'Un borrador es privado. Publicar ahora hace visible la nota en el portal local.') ?></p><div class="publish-actions"><button type="submit" name="action" value="<?= $originalStatus==='published'?'update':'publish' ?>" class="primary"><?= $originalStatus==='published'?'Guardar cambios':'Publicar ahora' ?></button><button type="submit" name="action" value="draft"><?= $wasPublic?'Pasar a borrador':'Guardar borrador' ?></button><a class="button" id="cancelChanges" href="/admin/">Cancelar cambios</a></div><?php if ($wasPublic): ?><p class="help">Pasar a borrador retira la nota del portal. Podés volver a publicarla después.</p><?php endif; ?>
+<details class="schedule-panel"><summary><?= $originalStatus==='published' && !$wasPublic?'Cambiar programación':'Programar para más adelante' ?></summary><label>Fecha y hora de publicación · Argentina<input type="datetime-local" name="published_at" value="<?= ij_e($dateValue) ?>"></label><button type="submit" name="action" value="schedule">Programar publicación</button><p class="help">Permanece oculta hasta la fecha elegida.</p></details>
+<details class="schedule-panel" <?= ($action ?? '')==='backdate' ? 'open' : '' ?>><summary>Publicar con fecha anterior</summary><p class="help">Para la carga inicial del archivo. La nota queda visible al guardar, con la fecha elegida, y se ordena por esa fecha en Últimas noticias. Su fecha de creación interna se conserva.</p><label>Fecha y hora que mostrará la nota · Argentina<input type="datetime-local" name="backdated_at" value="<?= ij_e($pastDateValue) ?>"></label><button type="submit" name="action" value="backdate"><?= $wasPublic?'Guardar con esta fecha':'Publicar con esta fecha' ?></button></details></section>
+<div class="editor-secondary-actions"><?php if ($id): ?><a class="button" href="/admin/preview.php?id=<?= $id ?>" target="_blank" rel="noopener">Vista previa de la versión guardada</a><?php endif; ?></div></form>
+<script defer src="/assets/js/editor.js?v=<?= filemtime(__DIR__.'/../assets/js/editor.js') ?>"></script>
+<?php require __DIR__.'/_foot.php'; ?>

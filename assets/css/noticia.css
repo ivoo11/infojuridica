@@ -1,0 +1,40 @@
+.article-page { padding-top: 30px; padding-bottom: 80px; }
+.article-breadcrumb { font-size: 12px; color: var(--gray); margin-bottom: 36px; }
+.article-heading { max-width: 1000px; margin: auto; }
+.article-heading h1 { font-family: var(--serif); font-size: clamp(34px, 5vw, 66px); font-weight: 500; line-height: 1.05; letter-spacing: -.035em; margin: 10px 0 22px; overflow-wrap: anywhere; }
+.article-summary { font-size: clamp(18px, 2vw, 23px); line-height: 1.5; color: #444; margin-bottom: 24px; }
+.article-heading .meta { line-height: 1.8; }
+.article-heading { margin-bottom: 30px; }
+/* Cierre editorial compartido por noticia y opinión. */
+.article-share { max-width: 740px; margin: 44px auto 0; padding: 30px 0 26px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--gray-light); }
+.article-share-intro h2 { margin: 0 0 10px; font-family: var(--serif); font-size: clamp(27px, 3vw, 34px); font-weight: 500; line-height: 1.15; letter-spacing: -.025em; }
+.article-share-intro p { font-family: var(--sans); font-size: 14px; line-height: 1.6; color: var(--gray); margin: 0; }
+.article-share-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 24px; }
+.article-share-actions a, .article-share-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 12px 14px; border: 1px solid var(--gray-light); background: var(--white); color: var(--ink); font-family: var(--sans); font-size: 12px; font-weight: 600; line-height: 1.4; cursor: pointer; transition: border-color .15s ease, color .15s ease, background-color .15s ease; }
+.article-share-actions a:hover, .article-share-actions button:hover { border-color: var(--burgundy); background: var(--gray-soft); color: var(--burgundy); }
+.share-icon { width: 19px; height: 19px; flex: 0 0 19px; }
+.article-page :focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
+#shareStatus { margin: 14px 0 0; font-family: var(--sans); font-size: 12px; line-height: 1.6; color: var(--burgundy); }
+#shareStatus:empty { display: none; }
+.article-copy-fallback { display: block; margin-top: 16px; font-family: var(--sans); font-size: 12px; }
+.article-copy-fallback[hidden] { display: none; }
+.article-copy-fallback input { display: block; width: 100%; min-width: 0; margin-top: 8px; padding: 12px; background: var(--white); border: 1px solid var(--gray-light); }
+.article-share-help { margin-top: 16px; font-size: 12px; line-height: 1.6; color: var(--gray); }
+.article-return { max-width: 740px; margin: 24px auto 0; }
+@media (max-width:720px) { .article-share { margin-top: 34px; padding-top: 26px; } .article-share-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 20px; } }
+@media (prefers-reduced-motion:reduce) { .article-share-actions a, .article-share-actions button { transition: none; } }
+.article-image { max-width: 1100px; margin: 0 auto 40px; }
+.article-image img { aspect-ratio: 16/9; height: auto; object-fit: cover; background: var(--gray-light); }
+.article-image figcaption { font-size: 11px; color: var(--gray); margin-top: 10px; }
+.article-body { max-width: 740px; margin: auto; font-family: var(--serif); font-size: 21px; line-height: 1.75; overflow-wrap: anywhere; }
+.article-body p { margin-bottom: 25px; }
+.article-body h2 { font-size: 32px; line-height: 1.2; font-weight: 500; margin: 40px 0 20px; }
+.article-body blockquote { border-left: 3px solid var(--burgundy); padding-left: 24px; margin: 35px 0; font-size: 28px; line-height: 1.4; }
+.article-body a { color: var(--burgundy); text-decoration: underline; text-underline-offset: 4px; }
+.article-back { display: inline-block; padding: 10px 0; color: var(--burgundy); text-decoration: underline; text-underline-offset: 4px; font-family: var(--sans); font-size: 13px; }
+@media(max-width:720px) { .article-page { padding-bottom: 48px; } .article-breadcrumb { margin-bottom: 24px; } .article-body { font-size: 19px; } .article-body blockquote { font-size: 24px; } }
+
+.article-author { display: flex; gap: 18px; align-items: center; margin: 20px 0; }
+.article-author img { width: 72px; height: 88px; object-fit: cover; }
+.article-author strong { font-size: 14px; }
+.article-author p { color: var(--gray); font-size: 12px; margin-top: 8px; }

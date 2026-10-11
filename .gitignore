@@ -1,0 +1,11 @@
+/config/local.php
+/uploads/*
+!/uploads/.htaccess
+!/uploads/index.php
+
+# Archivos locales y copias de trabajo
+.DS_Store
+/index backup.html
+*.sql.gz
+
+/config/production.php

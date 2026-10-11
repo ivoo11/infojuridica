@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS post_slugs (
+ slug VARCHAR(180) PRIMARY KEY,
+ post_id BIGINT UNSIGNED NOT NULL,
+ FOREIGN KEY (post_id) REFERENCES posts(id), INDEX slug_post (post_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS post_urls (
+ post_id BIGINT UNSIGNED PRIMARY KEY,
+ slug VARCHAR(180) NOT NULL UNIQUE,
+ FOREIGN KEY (post_id) REFERENCES posts(id),
+ FOREIGN KEY (slug) REFERENCES post_slugs(slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
