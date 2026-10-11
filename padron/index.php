@@ -7,7 +7,7 @@ declare(strict_types=1);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Consulta de padrón electoral | ELecciones Consejo de la Magistratura</title>
+    <title>Consulta de padrón electoral | Elecciones Consejo de la Magistratura</title>
 
     <meta
         name="description"
@@ -16,44 +16,18 @@ declare(strict_types=1);
 
     <?php require __DIR__ . '/../includes/favicon.php'; ?>
 
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260923-1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=<?= filemtime(__DIR__.'/../assets/css/styles.css') ?>">
+    <link rel="stylesheet" href="/assets/css/navigation.css?v=<?= filemtime(__DIR__.'/../assets/css/navigation.css') ?>">
+    <link rel="stylesheet" href="assets/css/styles.css?v=<?= filemtime(__DIR__.'/assets/css/styles.css') ?>">
 </head>
 
-<body>
+<body class="padron-page">
+<?php require __DIR__.'/../includes/header.php'; ?>
 
-<main class="site">
-
-<header class="header">
-
-    <div class="header-inner">
-
-        <div class="site-brand">
-            <img
-                src="assets/img/logo-infojuridica.png"
-                alt="Info Jurídica"
-                class="site-logo"
-            >
-        </div>
-
-        <div class="election-brand">
-
-            <span class="brand-kicker">
-                ELECCIONES
-            </span>
-
-            <strong class="brand-title">
-                CONSEJO DE LA MAGISTRATURA
-            </strong>
-
-            <span class="brand-country">
-                DE LA NACIÓN
-            </span>
-
-        </div>
-
-    </div>
-
-</header>
+<main class="container padron-tool">
 
 
     <section class="hero">
@@ -61,16 +35,15 @@ declare(strict_types=1);
         <div class="hero-copy">
 
             <p class="eyebrow">
-                Consulta electoral
+                Elecciones 2026 · Consejo de la Magistratura de la Nación
             </p>
 
             <h1>
-                Consultá dónde<br>
-                te corresponde votar.
+                Consultá tu lugar de votación
             </h1>
 
             <p class="intro">
-                Ingresá tus datos para consultar tu lugar de votación.
+                Consulta del padrón de la abogacía para las elecciones del Consejo de la Magistratura de la Nación. Ingresá tu DNI y el sexo registrado en el padrón.
             </p>
 
         </div>
@@ -161,7 +134,7 @@ declare(strict_types=1);
     </section>
 
 
-<footer class="footer">
+<aside class="padron-notice" aria-label="Información sobre la consulta">
 
     <p>
         Herramienta independiente de consulta electoral.
@@ -172,12 +145,15 @@ declare(strict_types=1);
         La consulta es procesada mediante una fuente externa.
     </p>
 
-</footer>
+</aside>
 
 </main>
+<?php require __DIR__.'/../includes/footer.php'; ?>
 
-<script src="assets/js/jspdf.umd.min.js?v=1"></script>
-<script src="assets/js/app.js?v=2"></script>
+<script src="assets/js/jspdf.umd.min.js?v=<?= filemtime(__DIR__.'/assets/js/jspdf.umd.min.js') ?>"></script>
+<script src="assets/js/app.js?v=<?= filemtime(__DIR__.'/assets/js/app.js') ?>"></script>
+<script src="/assets/js/app.js?v=<?= filemtime(__DIR__.'/../assets/js/app.js') ?>"></script>
+<script src="/assets/js/navigation.js?v=<?= filemtime(__DIR__.'/../assets/js/navigation.js') ?>"></script>
 
 </body>
 </html>
