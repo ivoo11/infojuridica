@@ -29,7 +29,7 @@
 
 /* En contexto: tres lecturas con la misma jerarquía. */
 #en-contexto .context-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
-#en-contexto .context-card { min-height: 0; justify-content: flex-start; padding: 28px; background: var(--white); }
+#en-contexto .context-card { min-height: 0; justify-content: flex-start; padding: 28px; background: #e9e4db; }
 #en-contexto .context-card h3 { font-size: clamp(24px, 2.1vw, 30px); line-height: 1.18; margin-bottom: 18px; }
 #en-contexto .context-card .summary { font-size: 15px; line-height: 1.65; }
 @media (max-width: 900px) {
@@ -37,3 +37,6 @@
     #en-contexto .context-card { padding: 24px; }
     #en-contexto .context-card h3 { font-size: 26px; }
 }
+
+.home-agenda .agenda-all-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+.home-agenda .agenda-all-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }

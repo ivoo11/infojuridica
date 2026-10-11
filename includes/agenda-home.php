@@ -10,7 +10,7 @@ $agendaMonths = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 
 <section class="section home-agenda" id="agenda">
     <div class="container">
         <div class="section-header">
-            <div><div class="section-kicker">Próximamente</div><h2 class="section-title">Agenda</h2><?php if (!ij_live()): ?><p class="home-demo-label">Actividades de demostración · Pendientes de contenido real</p><?php else: ?><a href="/agenda/">Todas las actividades</a><?php endif; ?></div>
+            <div><div class="section-kicker">Próximas actividades</div><h2 class="section-title">Agenda</h2><?php if (!ij_live()): ?><p class="home-demo-label">Actividades de demostración · Pendientes de contenido real</p><?php else: ?><a class="agenda-all-link" href="/agenda/">Todas las actividades</a><?php endif; ?></div>
             <div class="agenda-controls">
                 <button type="button" id="agendaPrevious" aria-label="Actividad anterior" aria-controls="agendaTrack"></button>
                 <button type="button" id="agendaNext" aria-label="Actividad siguiente" aria-controls="agendaTrack"></button>
