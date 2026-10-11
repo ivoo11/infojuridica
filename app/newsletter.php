@@ -43,3 +43,19 @@ function ij_newsletter_url(string $path): string {
     if (preg_match('~^https?://~i',$path)) return $path;
     return 'https://infojuridica.com.ar/'.ltrim($path,'/');
 }
+
+// Called by the future SMTP worker: never render an outgoing email without a personal opt-out link.
+function ij_newsletter_email(int $editionId,int $subscriberId): array {
+    require_once __DIR__.'/subscriptions.php';
+    $edition=ij_newsletter($editionId);
+    if (!$edition) throw new InvalidArgumentException('La edición no existe.');
+    $posts=ij_newsletter_posts($edition);
+    if (!$posts || count($posts)!==count($edition['ids'])) throw new InvalidArgumentException('Revisá las publicaciones de la edición antes de enviar.');
+    $events=$edition['include_agenda'] ? array_slice(ij_upcoming_events(),0,3) : [];
+    $unsubscribeUrl=ij_subscription_unsubscribe_url($subscriberId);
+    $newsletterIsEmail=true;
+    ob_start();
+    try { require __DIR__.'/../includes/newsletter-template.php';$html=ob_get_clean(); }
+    catch (Throwable $e) { ob_end_clean();throw $e; }
+    return ['subject'=>$edition['subject'],'html'=>$html,'unsubscribe_url'=>$unsubscribeUrl,'headers'=>['List-Unsubscribe'=>'<'.$unsubscribeUrl.'>','List-Unsubscribe-Post'=>'List-Unsubscribe=One-Click']];
+}

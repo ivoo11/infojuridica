@@ -134,3 +134,12 @@ El banner compartido permite ingresar email y pulsar Suscribirme sin navegar a o
 El envío del banner obtiene un token de sesión no cacheable de /newsletter.php?token=1 y registra la solicitud con respuesta JSON en la misma página. No se incluyen tokens de sesión en el HTML de páginas que puedan cachearse. Se mantienen validación, protección de formulario, campo trampa y límite de solicitudes.
 
 El consentimiento del banner tiene versión 2026-10-11-button y origen portal-banner; se guarda el texto exacto visible. Los consentimientos previos conservan su versión y texto. Las solicitudes siguen pendientes de confirmar: no se emiten correos todavía. La baja automática mediante enlace personal deberá integrarse antes del envío. El aviso junto al botón no sustituye la información del responsable de datos y sus canales de contacto; esos datos todavía no fueron suministrados. Esta implementación técnica no constituye una certificación de cumplimiento legal.
+
+
+### Baja automática
+
+newsletter-baja.php acepta un enlace personal con token aleatorio de 256 bits. MySQL guarda solo su SHA-256. GET muestra una confirmación sin alterar la suscripción para evitar bajas por escáneres de correo; POST confirma la baja sin sesión ni intervención del administrador. El mismo token permite repetir la operación sin modificar la primera fecha de baja. El endpoint admite también POST List-Unsubscribe=One-Click. Cabecera Referrer-Policy no-referrer evita transmitir el token al cargar recursos.
+
+ij_newsletter_email(editionId,subscriberId) produce HTML de correo sin controles de preview, con un enlace personal de baja y los valores de List-Unsubscribe y List-Unsubscribe-Post para el futuro transportista SMTP. Rechaza suscriptores no activos y ediciones con publicaciones que ya no están disponibles. La preview editorial no genera enlaces reales de suscriptores. No existe aún un worker de envío SMTP; las cabeceras deben adjuntarse al envío y firmarse según los requisitos del proveedor/cliente para que pueda ofrecer One-Click.
+
+La baja marca status=unsubscribed y unsubscribed_at, conserva el historial de aceptación y no elimina el email del registro de exclusión. Una nueva solicitud vuelve a pending, invalida los enlaces anteriores y exige otra confirmación antes de futuros envíos. El proceso de confirmación de altas y la conexión SMTP siguen pendientes.

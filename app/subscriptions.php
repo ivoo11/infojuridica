@@ -30,10 +30,37 @@ function ij_subscription_request(string $email, string $remote, string $version=
         $s=$db->prepare('INSERT INTO newsletter_subscribers(email) VALUES(?) ON DUPLICATE KEY UPDATE email=email');$s->execute([$email]);
         $s=$db->prepare('SELECT id,status FROM newsletter_subscribers WHERE email=? FOR UPDATE');$s->execute([$email]);$subscriber=$s->fetch();
         if ($subscriber['status']!=='active') {
+            $s=$db->prepare('DELETE FROM newsletter_unsubscribe_tokens WHERE subscriber_id=?');$s->execute([$subscriber['id']]);
             $s=$db->prepare("UPDATE newsletter_subscribers SET status='pending',requested_at=UTC_TIMESTAMP(),confirmed_at=NULL WHERE id=?");$s->execute([$subscriber['id']]);
             $s=$db->prepare('INSERT INTO newsletter_consents(subscriber_id,consent_version,consent_text,source) VALUES(?,?,?,?)');
             $s->execute([$subscriber['id'],$version,ij_subscription_consent($version),$version==='2026-10-11-button' ? 'portal-banner' : 'portal-form']);
         }
         $db->commit();
+    } catch (Throwable $e) { if ($db->inTransaction()) $db->rollBack();throw $e; }
+}
+
+function ij_subscription_unsubscribe_url(int $subscriberId): string {
+    ij_subscriptions_ready();
+    $s=ij_db()->prepare("SELECT id FROM newsletter_subscribers WHERE id=? AND status='active'");$s->execute([$subscriberId]);
+    if (!$s->fetchColumn()) throw new InvalidArgumentException('El suscriptor no está confirmado para recibir correos.');
+    $token=bin2hex(random_bytes(32));
+    $s=ij_db()->prepare('INSERT INTO newsletter_unsubscribe_tokens(token_hash,subscriber_id) VALUES(?,?)');$s->execute([hash('sha256',$token),$subscriberId]);
+    return 'https://infojuridica.com.ar/newsletter-baja.php?token='.$token;
+}
+function ij_subscription_token(string $token): ?array {
+    if (!preg_match('/^[a-f0-9]{64}$/D',$token)) return null;
+    ij_subscriptions_ready();
+    $s=ij_db()->prepare('SELECT t.subscriber_id,s.status FROM newsletter_unsubscribe_tokens t JOIN newsletter_subscribers s ON s.id=t.subscriber_id WHERE t.token_hash=?');$s->execute([hash('sha256',$token)]);
+    return $s->fetch() ?: null;
+}
+function ij_subscription_unsubscribe(string $token): bool {
+    if (!preg_match('/^[a-f0-9]{64}$/D',$token)) return false;
+    ij_subscriptions_ready();$db=ij_db();$db->beginTransaction();
+    try {
+        $s=$db->prepare('SELECT subscriber_id FROM newsletter_unsubscribe_tokens WHERE token_hash=? FOR UPDATE');$s->execute([hash('sha256',$token)]);$id=$s->fetchColumn();
+        if (!$id) { $db->rollBack();return false; }
+        $s=$db->prepare("UPDATE newsletter_subscribers SET status='unsubscribed',unsubscribed_at=COALESCE(unsubscribed_at,UTC_TIMESTAMP()) WHERE id=?");$s->execute([$id]);
+        $s=$db->prepare('UPDATE newsletter_unsubscribe_tokens SET used_at=COALESCE(used_at,UTC_TIMESTAMP()) WHERE token_hash=?');$s->execute([hash('sha256',$token)]);
+        $db->commit();return true;
     } catch (Throwable $e) { if ($db->inTransaction()) $db->rollBack();throw $e; }
 }

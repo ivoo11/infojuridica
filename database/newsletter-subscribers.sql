@@ -20,3 +20,12 @@ CREATE TABLE IF NOT EXISTS newsletter_request_limits (
  attempts INT UNSIGNED NOT NULL DEFAULT 0,
  window_start DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS newsletter_unsubscribe_tokens (
+ token_hash CHAR(64) PRIMARY KEY,
+ subscriber_id BIGINT UNSIGNED NOT NULL,
+ created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ used_at DATETIME NULL,
+ FOREIGN KEY (subscriber_id) REFERENCES newsletter_subscribers(id),
+ INDEX subscriber_tokens(subscriber_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

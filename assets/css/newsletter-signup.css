@@ -25,3 +25,6 @@
 .newsletter-feedback { padding:18px;border-left:3px solid #711b2d;margin:24px 0;background:#f2f2f2; }
 .newsletter-registration button { border:0;cursor:pointer; }
 .newsletter-registration input:focus-visible { outline:2px solid #711b2d;outline-offset:3px; }
+
+.newsletter-input-row input:hover { border-color:#8c1832; }
+.newsletter-input-row input:focus { outline:none;outline-offset:0;border-color:#8c1832;box-shadow:inset 0 0 0 1px #8c1832; }
