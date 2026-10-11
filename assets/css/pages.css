@@ -16,3 +16,12 @@
 .event-list-item { border-bottom: 1px solid #ddd; padding: 24px 0; }
 .agenda-item h3 a { color: inherit; text-decoration: none; }
 .agenda-item h3 a:hover { text-decoration: underline; }
+
+/* Un título editorial claro, sin etiquetas repetidas. */
+.listing-heading-category { padding: 28px 0 30px; }
+.listing-heading-category h1 { display: flex; align-items: center; gap: 24px; line-height: 1.15; margin: 0; }
+.listing-heading-category h1::after { content: ''; flex: 1; min-width: 24px; height: 1px; background: var(--gray-light); }
+@media (max-width: 600px) {
+    .listing-heading-category { padding: 22px 0 24px; }
+    .listing-heading-category h1 { gap: 16px; font-size: clamp(30px, 8vw, 36px); }
+}
