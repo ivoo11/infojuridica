@@ -14,12 +14,15 @@ require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/he
 <div class="section-kicker">Agenda</div><h1><?= ij_e($event['title']) ?></h1>
 <ul class="event-schedule" aria-label="Jornadas de la actividad">
 <?php foreach (ij_event_days($event) as $day): ?><li><?= ij_e(ij_event_day_label($day)) ?></li><?php endforeach; ?>
-</ul><p class="help">Horarios de Argentina (GMT-3).</p>
+</ul>
 <p><?= ij_e(['presencial'=>'Presencial','virtual'=>'Virtual','hibrida'=>'Híbrida'][$event['modality']]) ?> · <?= ij_e($event['place']) ?></p>
 <?php if ($event['image']): ?><img class="event-image" src="<?= ij_e($event['image']) ?>" alt="<?= ij_e($event['image_alt']) ?>"><?php endif; ?>
 <div class="event-description"><?= ij_body($event['description']) ?></div>
-<?php if ($event['registration_url']): ?><p><a class="button" target="_blank" rel="noopener noreferrer" href="<?= ij_e($event['registration_url']) ?>">Inscribirme</a></p><?php endif; ?>
-<p><a href="/agenda/">Ver próximas actividades</a></p></main>
+<div class="event-actions">
+<?php if ($event['registration_url']): ?><a class="event-register" target="_blank" rel="noopener noreferrer" href="<?= ij_e($event['registration_url']) ?>">Inscribirme</a><?php endif; ?>
+<a class="event-back" href="/agenda/">Ver próximas actividades</a>
+</div>
+</main>
 <?php require __DIR__.'/../includes/footer.php'; ?>
 <script src="/assets/js/app.js?v=<?= filemtime(__DIR__.'/../assets/js/app.js') ?>"></script>
 <script src="/assets/js/navigation.js?v=<?= filemtime(__DIR__.'/../assets/js/navigation.js') ?>"></script></body></html>
