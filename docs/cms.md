@@ -93,3 +93,7 @@ La pantalla Agenda permite crear actividades con título, descripción, fecha/ho
 Las actividades publicadas aparecen en el carrusel de portada y /agenda/ ordenadas por inicio. Finalizado el evento se retira de próximas actividades sin borrarlo. Si no hay finalización, se conserva hasta el fin del día de inicio en Argentina. Con la base activa y sin actividades próximas, la sección de portada se oculta. Las actividades pasadas publicadas conservan su página directa.
 
 La tabla events se crea automáticamente al usar Agenda; en una base existente puede importarse únicamente database/events.sql. No reimportar schema.sql. No se agregan actividades ficticias a la base real.
+
+## Negritas dentro del cuerpo
+
+Seleccionar palabras o una frase dentro del párrafo y pulsar Negrita (Ctrl+B o ⌘B). Repetir sobre la selección para quitarla. Se conserva como **texto** y se representa en negrita en la vista previa y en el artículo, incluidas las citas. El pegado de texto con negritas también conserva ese formato. No requiere cambios de base; HTML sigue escapado.

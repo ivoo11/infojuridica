@@ -28,14 +28,18 @@ function ij_date(string $date): string {
     $months = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
     return $d->format('d') . ' ' . $months[(int)$d->format('n') - 1] . ' ' . $d->format('Y');
 }
+function ij_inline(string $text): string {
+    // Escape editorial text before introducing the only permitted inline tag.
+    return preg_replace('/\*\*([^\r\n*]+)\*\*/u', '<strong>$1</strong>', ij_e($text));
+}
 function ij_body(string $body): string {
     // Texto plano: párrafos, ## subtítulos y > citas; nunca ejecuta HTML editorial.
     $html = '';
     foreach (preg_split('/\R\s*\R/u', trim($body)) as $block) {
         if ($block === '') continue;
-        if (str_starts_with($block, '## ')) $html .= '<h2>' . ij_e(substr($block,3)) . '</h2>';
-        elseif (str_starts_with($block, '> ')) $html .= '<blockquote>' . nl2br(ij_e(preg_replace('/^> ?/m','',$block))) . '</blockquote>';
-        else $html .= '<p>' . nl2br(ij_e($block)) . '</p>';
+        if (str_starts_with($block, '## ')) $html .= '<h2>' . ij_inline(substr($block,3)) . '</h2>';
+        elseif (str_starts_with($block, '> ')) $html .= '<blockquote>' . nl2br(ij_inline(preg_replace('/^> ?/m','',$block))) . '</blockquote>';
+        else $html .= '<p>' . nl2br(ij_inline($block)) . '</p>';
     }
     return $html;
 }

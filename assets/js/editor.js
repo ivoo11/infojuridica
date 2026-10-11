@@ -13,12 +13,55 @@
       event.preventDefault();
     }
   });
+  function inlineNodes(element, text) {
+    const pattern = /\*\*([^\r\n*]+)\*\*/g;
+    let cursor = 0;
+    for (const match of text.matchAll(pattern)) {
+      element.append(document.createTextNode(text.slice(cursor, match.index)));
+      const strong = document.createElement('strong');
+      strong.textContent = match[1];
+      element.append(strong);
+      cursor = match.index + match[0].length;
+    }
+    element.append(document.createTextNode(text.slice(cursor)));
+  }
+  function boldSelection() {
+    let start = input.selectionStart, end = input.selectionEnd;
+    let selected = input.value.slice(start, end);
+    if (!selected.trim() || /[\r\n]/.test(selected)) {
+      window.alert('Seleccioná una palabra o frase dentro de un párrafo para aplicar negrita.');
+      input.focus();
+      return;
+    }
+    let replacement;
+    if (selected.startsWith('**') && selected.endsWith('**') && selected.length > 4) {
+      replacement = selected.slice(2, -2);
+    } else if (input.value.slice(start - 2, start) === '**' && input.value.slice(end, end + 2) === '**') {
+      start -= 2; end += 2; replacement = selected;
+    } else {
+      const leading = selected.match(/^\s*/)[0].length;
+      const trailing = selected.match(/\s*$/)[0].length;
+      start += leading; end -= trailing;
+      selected = input.value.slice(start, end);
+      replacement = '**' + selected + '**';
+    }
+    input.setRangeText(replacement, start, end, 'select');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('bodyPreview').open = true;
+    input.focus();
+  }
+  document.querySelector('[data-inline="bold"]')?.addEventListener('click', boldSelection);
+  input.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+      event.preventDefault(); boldSelection();
+    }
+  });
   function render() {
     preview.replaceChildren();
     input.value.trim().split(/\r?\n\s*\r?\n/).filter(Boolean).forEach(block => {
       const quote = block.startsWith('> '), heading = block.startsWith('## ');
       const element = document.createElement(quote ? 'blockquote' : heading ? 'h2' : 'p');
-      element.textContent = quote ? block.replace(/^> ?/gm, '') : heading ? block.slice(3) : block;
+      inlineNodes(element, quote ? block.replace(/^> ?/gm, '') : heading ? block.slice(3) : block);
       preview.append(element);
     });
   }
@@ -51,6 +94,7 @@
         if (node.nodeType !== Node.ELEMENT_NODE || ignored.has(node.tagName)) return '';
         if (node.tagName === 'BR') return '\n';
         let text = Array.from(node.childNodes, read).join('');
+        if (['STRONG', 'B'].includes(node.tagName) && text.trim() && !/[\r\n]/.test(text)) text = '**' + text + '**';
         if (blocks.has(node.tagName)) text = '\n\n' + text.trim() + '\n\n';
         return text;
       }
