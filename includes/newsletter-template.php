@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title><?= ij_e($edition['subject']) ?></title></head>
+<body style="margin:0;background:#f2f2f2;color:#171717;font-family:Arial,Helvetica,sans-serif;">
+<div style="padding:14px;text-align:center;font-size:13px;background:#fff;border-bottom:1px solid #ddd;">Vista previa · No se envió ningún correo · <a style="color:#711b2d;" href="/admin/newsletter-editar.php?id=<?= (int)$edition['id'] ?>">Volver a editar</a></div>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background:#fff;"><tr><td style="padding:28px 24px;border-bottom:2px solid #711b2d;"><a href="https://infojuridica.com.ar/" style="text-decoration:none;color:#171717;"><img src="https://infojuridica.com.ar/assets/img/logo-infojuridica.png" width="240" alt="INFO JURÍDICA" style="display:block;max-width:100%;height:auto;border:0;"></a><p style="margin:12px 0 0;color:#777;font-size:12px;">Newsletter · <?= ij_date(ij_now()) ?></p></td></tr>
+<?php if ($edition['introduction']!==''): ?><tr><td style="padding:24px 24px 0;font-size:16px;line-height:1.6;"><?= nl2br(ij_e($edition['introduction'])) ?></td></tr><?php endif; ?>
+<?php if (count($posts)!==count($edition['ids'])): ?><tr><td style="padding:24px;color:#711b2d;">Una noticia seleccionada ya no está disponible. Volvé al editor para reemplazarla.</td></tr><?php endif; ?>
+<?php foreach ($posts as $index=>$post): $url=ij_newsletter_url($post['url']); ?><tr><td style="padding:24px;border-bottom:1px solid #e3e0da;">
+<?php if ($index===0 && $post['image']): ?><a href="<?= ij_e($url) ?>"><img src="<?= ij_e(ij_newsletter_url($post['image'])) ?>" alt="<?= ij_e($post['image_alt']) ?>" width="552" style="display:block;width:100%;height:auto;border:0;margin-bottom:20px;"></a><?php endif; ?>
+<p style="color:#711b2d;font-size:11px;letter-spacing:1px;margin:0 0 10px;"><?= ij_e($post['categoria']) ?></p>
+<h2 style="font-family:Georgia,serif;font-size:<?= $index===0 ? '28' : '22' ?>px;line-height:1.25;margin:0 0 12px;font-weight:normal;"><a href="<?= ij_e($url) ?>" style="color:#171717;text-decoration:none;"><?= ij_e($post['title']) ?></a></h2>
+<p style="font-size:15px;line-height:1.6;color:#555;margin:0 0 14px;"><?= ij_e($post['summary']) ?></p>
+<a href="<?= ij_e($url) ?>" style="color:#711b2d;font-size:14px;">Leer noticia</a>
+</td></tr><?php endforeach; ?>
+<?php if ($events): ?><tr><td style="padding:24px;"><h2 style="font-family:Georgia,serif;font-size:24px;font-weight:normal;margin:0 0 18px;">Próximas actividades</h2><?php foreach ($events as $event): ?><p style="margin:0 0 18px;font-size:14px;line-height:1.5;"><a style="color:#711b2d;" href="<?= ij_e(ij_newsletter_url('/agenda/actividad.php?id='.(int)$event['id'])) ?>"><?= ij_e($event['title']) ?></a><br><span style="color:#666;"><?= ij_e(ij_event_card_schedule(ij_event_days($event))['dates']) ?></span></p><?php endforeach; ?></td></tr><?php endif; ?>
+<tr><td style="padding:24px;background:#171717;color:#bbb;font-size:12px;line-height:1.6;">INFO JURÍDICA · Información para la comunidad jurídica argentina.<br><a href="https://infojuridica.com.ar/" style="color:#fff;">Visitar el portal</a><p style="margin:14px 0 0;">La edición enviada incluirá un enlace personal para darse de baja.</p></td></tr>
+</table></td></tr></table><script>if(window.opener)window.opener.postMessage({type:"newsletter-saved",id:<?= (int)$edition['id'] ?>},location.origin);</script></body></html>

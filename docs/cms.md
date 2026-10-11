@@ -103,3 +103,14 @@ Seleccionar palabras o una frase dentro del párrafo y pulsar Negrita (Ctrl+B o 
 Fechas y horarios permite agregar un día por fila, con fecha y horas de inicio/cierre separadas y opcionales. Agregar otra fecha conserva los horarios de la última fila para facilitar jornadas iguales. Cada día puede tener otro horario. No se muestra medianoche como hora si no fue indicada. Las actividades se mantienen en próximas hasta la última jornada (cierre conocido o fin del día).
 
 La tabla adicional event_days se crea automáticamente (permiso CREATE), o importar solo database/event-days.sql en la base existente. No reimportar schema.sql. Los eventos anteriores conservan sus fechas y se muestran con compatibilidad; para convertir un rango continuo en jornadas, editar y confirmar las fechas y horarios.
+
+
+## Newsletter: preparación editorial
+
+Desde Newsletter → Nueva edición se propone una principal y cinco noticias, tomadas de las publicaciones visibles más recientes. Se pueden reemplazar, quitar o reordenar usando los seis lugares. Se excluyen borradores, publicaciones programadas y columnas de opinión. La selección del newsletter no modifica la portada. Por ahora se proponen las seis más recientes; no se lleva un historial de noticias enviadas porque el envío aún no está implementado.
+
+Guardar borrador vuelve al listado. Guardar y ver preview guarda la edición y abre su vista previa en otra pestaña; la pestaña original queda vinculada al mismo borrador. Cancelar cambios confirma si se descarta contenido modificado. Las vistas previas requieren sesión de editor y no son públicas.
+
+La plantilla usa tablas, estilos en línea, imágenes y enlaces absolutos del dominio de producción. Incluye una introducción opcional y hasta tres próximas actividades; la agenda se oculta si no hay actividades. Al editar, se usan los contenidos vigentes de las noticias; todavía no se congela una versión para enviar.
+
+Esta etapa NO envía correos: no hay botón de envío, conexión SMTP, lista de suscriptores, programación ni baja pública. El pie muestra una aclaración de vista previa, no un enlace ficticio de baja. El próximo paso es implementar estos componentes con noreply@infojuridica.com.ar y límite inicial de 90 destinatarios por 24 horas, más envíos de prueba contabilizados. La configuración newsletter de config/example.php es únicamente una reserva deshabilitada para esa integración. No copiar ni reemplazar la configuración completa de una base ya configurada. No guardar contraseñas de correo en Git.
