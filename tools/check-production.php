@@ -22,7 +22,7 @@ try {
     $db = new PDO($dsn . ';dbname=' . $c['name'] . ';charset=utf8mb4', $c['user'], $c['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     check('Conexión MySQL', true);
     $tables = $db->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
-    foreach (['users','categories','authors','posts','login_attempts','site_settings','post_slugs','post_urls','home_slots','events'] as $table) check('Tabla ' . $table, in_array($table, $tables, true));
+    foreach (['users','categories','authors','posts','login_attempts','site_settings','post_slugs','post_urls','home_slots','events','event_days'] as $table) check('Tabla ' . $table, in_array($table, $tables, true));
     if (in_array('users', $tables, true)) check('Usuario editorial activo', (int) $db->query('SELECT COUNT(*) FROM users WHERE active = 1')->fetchColumn() > 0);
     if (in_array('posts', $tables, true)) echo 'Publicaciones en la base: ' . $db->query('SELECT COUNT(*) FROM posts')->fetchColumn() . PHP_EOL;
 } catch (Throwable $error) {

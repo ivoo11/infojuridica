@@ -12,8 +12,9 @@ require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/he
 <main class="container event-detail">
 <?php if ($isPreview): ?><p>Vista previa privada · <a href="/admin/actividad.php?id=<?= (int)$event['id'] ?>">Editar actividad</a></p><?php endif; ?>
 <div class="section-kicker">Agenda</div><h1><?= ij_e($event['title']) ?></h1>
-<p><?= $event['starts_at'] ? ij_e(ij_date($event['starts_at']).' · '.substr(ij_event_local($event['starts_at']),11)) : 'Fecha por confirmar' ?> · Argentina (GMT-3)</p>
-<?php if ($event['ends_at']): ?><p>Finaliza: <?= ij_e(ij_date($event['ends_at']).' · '.substr(ij_event_local($event['ends_at']),11)) ?></p><?php endif; ?>
+<ul class="event-schedule" aria-label="Jornadas de la actividad">
+<?php foreach (ij_event_days($event) as $day): ?><li><?= ij_e(ij_event_day_label($day)) ?></li><?php endforeach; ?>
+</ul><p class="help">Horarios de Argentina (GMT-3).</p>
 <p><?= ij_e(['presencial'=>'Presencial','virtual'=>'Virtual','hibrida'=>'Híbrida'][$event['modality']]) ?> · <?= ij_e($event['place']) ?></p>
 <?php if ($event['image']): ?><img class="event-image" src="<?= ij_e($event['image']) ?>" alt="<?= ij_e($event['image_alt']) ?>"><?php endif; ?>
 <div class="event-description"><?= ij_body($event['description']) ?></div>

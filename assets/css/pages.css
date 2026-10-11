@@ -25,3 +25,6 @@
     .listing-heading-category { padding: 22px 0 24px; }
     .listing-heading-category h1 { gap: 16px; font-size: clamp(30px, 8vw, 36px); }
 }
+
+.event-schedule { list-style: none; padding: 0; margin: 24px 0 12px; }
+.event-schedule li { padding: 8px 0; border-bottom: 1px solid var(--gray-light); line-height: 1.6; }

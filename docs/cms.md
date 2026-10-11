@@ -97,3 +97,9 @@ La tabla events se crea automáticamente al usar Agenda; en una base existente p
 ## Negritas dentro del cuerpo
 
 Seleccionar palabras o una frase dentro del párrafo y pulsar Negrita (Ctrl+B o ⌘B). Repetir sobre la selección para quitarla. Se conserva como **texto** y se representa en negrita en la vista previa y en el artículo, incluidas las citas. El pegado de texto con negritas también conserva ese formato. No requiere cambios de base; HTML sigue escapado.
+
+## Actividades con varias jornadas
+
+Fechas y horarios permite agregar un día por fila, con fecha y horas de inicio/cierre separadas y opcionales. Agregar otra fecha conserva los horarios de la última fila para facilitar jornadas iguales. Cada día puede tener otro horario. No se muestra medianoche como hora si no fue indicada. Las actividades se mantienen en próximas hasta la última jornada (cierre conocido o fin del día).
+
+La tabla adicional event_days se crea automáticamente (permiso CREATE), o importar solo database/event-days.sql en la base existente. No reimportar schema.sql. Los eventos anteriores conservan sus fechas y se muestran con compatibilidad; para convertir un rango continuo en jornadas, editar y confirmar las fechas y horarios.

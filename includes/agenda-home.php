@@ -18,7 +18,7 @@ $agendaMonths = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 
         </div>
         <div class="agenda-track" id="agendaTrack" tabindex="0" aria-label="Próximas actividades">
             <?php if (ij_live()): foreach ($agendaEvents as $event): $eventDate=new DateTimeImmutable(ij_event_local($event['starts_at'])); ?>
-            <article class="agenda-item"><time class="agenda-day" datetime="<?= $eventDate->format('Y-m-d') ?>"><?= $eventDate->format('d') ?><span><?= $agendaMonths[(int)$eventDate->format('n')-1] ?></span></time><div><h3><a href="/agenda/actividad.php?id=<?= (int)$event['id'] ?>"><?= ij_e($event['title']) ?></a></h3><div class="agenda-place"><?= $eventDate->format('H:i') ?> · <?= ij_e($event['place']) ?></div></div></article>
+            <article class="agenda-item"><time class="agenda-day" datetime="<?= $eventDate->format('Y-m-d') ?>"><?= $eventDate->format('d') ?><span><?= $agendaMonths[(int)$eventDate->format('n')-1] ?></span></time><div><h3><a href="/agenda/actividad.php?id=<?= (int)$event['id'] ?>"><?= ij_e($event['title']) ?></a></h3><div class="agenda-place"><?= ij_e(ij_event_schedule_label($event)) ?><br><?= ij_e($event['place']) ?></div></div></article>
             <?php endforeach; else: ?>
             <?php foreach ([7, 14, 21, 28] as $index => $days): $eventDate = $agendaToday->modify('+' . $days . ' days'); ?>
             <article class="agenda-item">
