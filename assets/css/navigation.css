@@ -1,28 +1,40 @@
-/* Solo el estado abierto del menú: la portada cerrada conserva sus estilos. */
-@media (max-width: 1050px) {
-    .main-nav.is-menu-open .nav-inner {
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        overflow: visible;
-        gap: 24px;
-        padding: 20px 56px 20px 0;
-    }
-
-    .main-nav.is-menu-open .nav-inner a::after {
-        bottom: -7px;
-    }
+/* Encabezado compartido para escritorio, tablet y celular. */
+.topbar-date { line-height: 1.6; padding: 5px 0; font-size: 11px; }
+.masthead { padding: 0; border-bottom: 1px solid var(--ink); }
+.masthead-inner { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 0 40px; padding-top: 24px; padding-bottom: 24px; }
+.masthead .brand { justify-content: flex-start; }
+.masthead .brand-logo { height: 62px; max-width: 100%; width: auto; }
+.masthead .mobile-menu { display: none; }
+.masthead .main-nav { display: block; border: 0; min-width: 0; }
+.masthead .nav-inner { min-height: 44px; padding: 0; justify-content: flex-end; gap: 24px; overflow: visible; }
+.masthead .nav-inner a { white-space: nowrap; font-size: 13px; min-height: 44px; display: inline-flex; align-items: center; }
+.masthead .nav-inner a::after { bottom: 0; }
+.masthead .search-toggle { position: static; transform: none; flex-shrink: 0; width: 44px; height: 44px; }
+.masthead .search-panel { grid-column: 1 / -1; max-height: none; overflow: visible; opacity: 1; border: 0; transition: none; }
+.masthead .search-panel[hidden] { display: none; }
+.masthead .search-form { min-height: 0; padding-top: 24px; gap: 20px; }
+.masthead a:focus-visible, .masthead button:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
+@media (max-width: 1100px) {
+    .masthead-inner { grid-template-columns: minmax(0, 1fr) auto; gap: 0 24px; padding-top: 18px; padding-bottom: 18px; }
+    .masthead .brand-logo { height: 54px; }
+    .masthead .mobile-menu { display: inline-flex; align-items: center; justify-content: center; position: static; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+    .menu-icon { display: flex; flex-direction: column; gap: 5px; width: 24px; }
+    .menu-icon span { display: block; width: 24px; height: 2px; background: currentColor; transition: transform .2s, opacity .2s; }
+    .mobile-menu[aria-expanded="true"] .menu-icon span:first-child { transform: translateY(7px) rotate(45deg); }
+    .mobile-menu[aria-expanded="true"] .menu-icon span:nth-child(2) { opacity: 0; }
+    .mobile-menu[aria-expanded="true"] .menu-icon span:last-child { transform: translateY(-7px) rotate(-45deg); }
+    .masthead .main-nav { display: none; grid-column: 1 / -1; }
+    .masthead .main-nav.is-menu-open { display: block; margin-top: 18px; border-top: 1px solid var(--gray-light); }
+    .masthead .nav-inner { flex-direction: column; align-items: stretch; gap: 0; padding: 12px 0 0; }
+    .masthead .nav-inner a { min-height: 48px; font-size: 16px; border-bottom: 1px solid var(--gray-light); }
+    .masthead .nav-inner a::after { display: none; }
+    .masthead .search-toggle { display: none; }
+    .masthead .search-form { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding-top: 22px; }
+    .masthead .search-form input { min-width: 0; width: 100%; font-size: 16px; }
 }
-
-@media (max-width: 720px) {
-    .main-nav.is-menu-open {
-        display: block;
-    }
-
-    .main-nav.is-menu-open .nav-inner a {
-        min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-    }
+@media (max-width: 480px) {
+    .masthead .brand-logo { height: 46px; }
+    .masthead-inner { gap: 0 16px; padding-top: 16px; padding-bottom: 16px; }
+    .topbar-date { font-size: 10px; letter-spacing: .02em; }
 }
-
-.topbar-date { line-height: 1.6; padding: 6px 0; }
+@media (prefers-reduced-motion: reduce) { .menu-icon span { transition: none; } }

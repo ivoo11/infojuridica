@@ -13,7 +13,7 @@ if (ij_live() && empty($isPreview) && isset($_SERVER['REQUEST_URI'])) {
 
 require __DIR__ . '/includes/noticia-head.php';
 require __DIR__ . '/includes/header.php';
-require __DIR__ . '/includes/navbar.php';
+
 ?>
 <main class="article-page container">
     <?php if (!empty($isPreview)): ?><p class="meta">VISTA PREVIA PRIVADA · Versión guardada · <a href="/admin/editar.php?id=<?= (int)$noticia['id'] ?>">Volver al editor</a></p><?php endif; ?>

@@ -1,7 +1,7 @@
 <?php
 require __DIR__.'/../app/events.php';$events=ij_upcoming_events();
 $noticia=['titulo'=>'Agenda','bajada'=>'Próximas actividades de la comunidad jurídica.'];
-require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';require __DIR__.'/../includes/navbar.php';
+require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';
 ?>
 <main class="container event-detail"><div class="section-kicker">Próximas actividades</div><h1>Agenda</h1>
 <?php if (!$events): ?><p>Próximamente compartiremos nuevas actividades.</p><?php endif; ?>

@@ -3,6 +3,7 @@
     const searchInput = document.getElementById('searchInput');
 
     function openSearch() {
+        searchPanel.hidden = false;
         searchPanel.classList.add('is-open');
         searchToggle.classList.add('is-open');
 
@@ -17,6 +18,7 @@
     }
 
     function closeSearch() {
+        searchPanel.hidden = true;
         searchPanel.classList.remove('is-open');
         searchToggle.classList.remove('is-open');
 

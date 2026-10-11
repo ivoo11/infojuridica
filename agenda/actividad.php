@@ -7,7 +7,7 @@ $event=null;
 if (ij_live() && $id && $id>0) { ij_events_ready();$s=ij_db()->prepare("SELECT * FROM events WHERE id=?".($isPreview?'':" AND status='published'"));$s->execute([$id]);$event=$s->fetch(); }
 if (!$event) { http_response_code(404);exit('Actividad no encontrada.'); }
 $noticia=['titulo'=>$event['title'],'bajada'=>mb_substr($event['description'],0,160)];
-require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';require __DIR__.'/../includes/navbar.php';
+require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';
 ?>
 <main class="container event-detail">
 <?php if ($isPreview): ?><p>Vista previa privada · <a href="/admin/actividad.php?id=<?= (int)$event['id'] ?>">Editar actividad</a></p><?php endif; ?>

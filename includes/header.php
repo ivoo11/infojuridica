@@ -24,9 +24,10 @@ $headerDate = $headerDays[(int) $headerNow->format('w')] . ' ' . $headerNow->for
             >
         </a>
 
-        <button class="mobile-menu" type="button" aria-controls="mainNav" aria-expanded="false">
-            MENÚ
+        <button class="mobile-menu" type="button" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir secciones">
+            <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
 
+        <?php require __DIR__ . '/navbar.php'; ?>
     </div>
 </header>

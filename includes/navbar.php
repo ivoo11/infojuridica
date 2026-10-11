@@ -1,12 +1,12 @@
     <!-- NAV -->
 <nav class="main-nav" id="mainNav" aria-label="Secciones">
-    <div class="container nav-inner">
+    <div class="nav-inner">
 
         <a href="/justicia/">Justicia</a>
         <a href="/profesion/">Profesión</a>
         <a href="/colegiatura/">Colegiatura</a>
         <a href="/universidades/">Universidades</a>
-        <a href="/#agenda">Agenda</a>
+        <a href="/agenda/">Agenda</a>
         <a href="/#opinion">Opinión</a>
 
         <button
@@ -14,6 +14,7 @@
             id="searchToggle"
             type="button"
             aria-label="Buscar en Info Jurídica"
+            aria-controls="searchPanel"
             aria-expanded="false"
         >
             <span class="search-icon" aria-hidden="true"></span>
@@ -22,9 +23,9 @@
     </div>
 </nav>
 
-<div class="search-panel" id="searchPanel">
+<div class="search-panel" id="searchPanel" hidden>
 
-    <div class="container">
+    <div>
 
         <form
             class="search-form"
@@ -34,15 +35,15 @@
 
             <div class="search-field">
 
-                <span class="search-label">
+                <label class="search-label" for="searchInput">
                     BUSCAR EN INFO JURÍDICA
-                </span>
+                </label>
 
                 <input
                     id="searchInput"
                     type="search"
                     name="q"
-                    placeholder="Noticias, colegios, universidades..."
+                    placeholder="Buscar noticias..."
                     autocomplete="off"
                 >
 

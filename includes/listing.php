@@ -7,7 +7,7 @@ $listingSlice = array_slice($listingItems, ($listingPage - 1) * 6, 6);
 $noticia = ['titulo' => $listingTitle, 'bajada' => $listingDescription];
 require __DIR__ . '/listing-head.php';
 require __DIR__ . '/header.php';
-require __DIR__ . '/navbar.php';
+
 ?>
 <main class="container listing-page">
     <header class="listing-heading<?= !empty($listingIsCategory) ? ' listing-heading-category' : '' ?>"><h1><?= htmlspecialchars($listingTitle, ENT_QUOTES, 'UTF-8') ?></h1><?php if (empty($listingIsCategory)): ?><p><?= htmlspecialchars($listingDescription, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?><?php if (!ij_live()): ?><p>Vista de demostración · Contenido de la maqueta</p><?php endif; ?></header>

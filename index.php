@@ -32,7 +32,7 @@
 <body>
 
 <?php require __DIR__ . '/includes/header.php'; ?>
-<?php require __DIR__ . '/includes/navbar.php'; ?>
+
     <?php require __DIR__ . '/includes/breaking-home.php'; ?>
 
     <main>
