@@ -12,9 +12,10 @@
     >
 
     <?php require __DIR__ . '/favicon.php'; ?>
+    <?php require __DIR__ . '/social-article.php'; ?>
 
     <!-- TIPOGRAFÍAS -->
-    <?php if (ij_live() && empty($isPreview)): ?><link rel="canonical" href="<?= ij_e($noticia['url']) ?>"><?php endif; ?>
+    <?php if (ij_live() && empty($isPreview)): ?><link rel="canonical" href="<?= ij_e('https://infojuridica.com.ar'.$noticia['url']) ?>"><?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
