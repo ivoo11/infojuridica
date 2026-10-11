@@ -290,8 +290,7 @@
 
                 <div class="context-grid">
 
-                    <article class="context-card main">
-                        <span class="context-number">01</span>
+                    <article class="context-card">
 
                         <span class="category">GUÍA</span>
 
@@ -306,7 +305,6 @@
 
 
                     <article class="context-card">
-                        <span class="context-number">02</span>
 
                         <span class="category">EN 5 MINUTOS</span>
 
@@ -321,7 +319,6 @@
 
 
                     <article class="context-card">
-                        <span class="context-number">03</span>
 
                         <span class="category">PROFESIÓN</span>
 
