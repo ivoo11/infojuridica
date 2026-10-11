@@ -20,7 +20,7 @@ require __DIR__ . '/includes/header.php';
     <nav class="article-breadcrumb" aria-label="Ubicación"><a href="/">Inicio</a> / <?= htmlspecialchars($noticia['categoria'], ENT_QUOTES, 'UTF-8') ?></nav>
     <article>
         <header class="article-heading">
-            <span class="category"><?= htmlspecialchars($noticia['categoria'], ENT_QUOTES, 'UTF-8') ?><?= ij_live() ? '' : ' · VISTA DE DEMOSTRACIÓN' ?></span>
+            <?php if (!ij_live()): ?><p class="meta">VISTA DE DEMOSTRACIÓN</p><?php endif; ?>
             <h1><?= htmlspecialchars($noticia['titulo'], ENT_QUOTES, 'UTF-8') ?></h1>
             <p class="article-summary"><?= htmlspecialchars($noticia['bajada'], ENT_QUOTES, 'UTF-8') ?></p>
             <?php if ($isOpinion): ?>
