@@ -1,3 +1,4 @@
+<?php require __DIR__.'/newsletter-signup.php'; ?>
 <footer>
     <div class="container">
         <div class="footer-grid">

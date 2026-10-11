@@ -1,0 +1,21 @@
+ .newsletter-signup { background:#e9e4db;color:#171717;padding:40px 0;margin-top:32px; }
+.newsletter-signup-inner { display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center; }
+.newsletter-signup-kicker { color:#711b2d;text-transform:uppercase;font:600 11px/1.5 Arial,sans-serif;letter-spacing:.12em; }
+.newsletter-signup h2 { font:400 clamp(26px,3vw,36px)/1.15 Georgia,serif;margin:12px 0 16px; }
+.newsletter-signup p { font-size:14px;line-height:1.6;margin:0;max-width:580px; }
+.newsletter-signup-button { display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;background:#711b2d;color:white;text-decoration:none;font:600 14px/1.4 Arial,sans-serif; }
+.newsletter-signup-button:focus-visible { outline:2px solid #711b2d;outline-offset:4px; }
+.newsletter-signup .newsletter-signup-note { font-size:12px;margin-top:12px; }
+@media(max-width:700px){.newsletter-signup-inner{grid-template-columns:1fr;gap:22px}.newsletter-signup{padding:32px 0}}
+
+.newsletter-registration { padding-top:40px;padding-bottom:64px; }
+.newsletter-registration h1 { font:400 clamp(32px,5vw,48px)/1.15 Georgia,serif;margin:0 0 24px; }
+.newsletter-registration-box { max-width:600px;border:1px solid #ddd;padding:24px;margin-top:28px; }
+.newsletter-registration-box label { display:block;font-size:15px;line-height:1.6;margin-bottom:24px; }
+.newsletter-registration-box input[type=email] { width:100%;font:inherit;font-size:16px;padding:12px;margin-top:10px;border:1px solid #bbb; }
+.newsletter-registration-box .newsletter-consent { display:flex;gap:12px;align-items:flex-start; }
+.newsletter-consent input { flex-shrink:0;width:20px;height:20px;margin-top:3px; }
+.newsletter-registration-help { color:#666;font-size:13px;line-height:1.6;margin-bottom:24px; }
+.newsletter-feedback { padding:18px;border-left:3px solid #711b2d;margin:24px 0;background:#f2f2f2; }
+.newsletter-registration button { border:0;cursor:pointer; }
+.newsletter-registration input:focus-visible { outline:2px solid #711b2d;outline-offset:3px; }

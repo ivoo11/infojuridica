@@ -113,4 +113,15 @@ Guardar borrador vuelve al listado. Guardar y ver preview guarda la edición y a
 
 La plantilla usa tablas, estilos en línea, imágenes y enlaces absolutos del dominio de producción. Incluye una introducción opcional y hasta tres próximas actividades; la agenda se oculta si no hay actividades. Al editar, se usan los contenidos vigentes de las noticias; todavía no se congela una versión para enviar.
 
-Esta etapa NO envía correos: no hay botón de envío, conexión SMTP, lista de suscriptores, programación ni baja pública. El pie muestra una aclaración de vista previa, no un enlace ficticio de baja. El próximo paso es implementar estos componentes con noreply@infojuridica.com.ar y límite inicial de 90 destinatarios por 24 horas, más envíos de prueba contabilizados. La configuración newsletter de config/example.php es únicamente una reserva deshabilitada para esa integración. No copiar ni reemplazar la configuración completa de una base ya configurada. No guardar contraseñas de correo en Git.
+Esta etapa NO envía correos: no hay botón de envío, conexión SMTP, programación ni baja pública. El registro inicial de suscriptores se describe a continuación. El pie muestra una aclaración de vista previa, no un enlace ficticio de baja. El próximo paso es implementar estos componentes con noreply@infojuridica.com.ar y límite inicial de 90 destinatarios por 24 horas, más envíos de prueba contabilizados. La configuración newsletter de config/example.php es únicamente una reserva deshabilitada para esa integración. No copiar ni reemplazar la configuración completa de una base ya configurada. No guardar contraseñas de correo en Git.
+
+
+## Solicitudes de suscripción y consentimiento
+
+El bloque compartido antes del footer abre /newsletter.php. No se muestra un popup. El formulario exige email válido y una casilla no premarcada. La respuesta deja claro que la solicitud queda pendiente y que el correo de confirmación se enviará cuando se conecte el servicio. No se confirma la propiedad del correo por completar el formulario y no se lo habilita para envíos.
+
+Al ingresar una solicitud se crean automáticamente las tablas de database/newsletter-subscribers.sql, sin reemplazar las tablas existentes. newsletter_subscribers guarda email único, estado pending, fecha de solicitud y campos reservados para confirmación y baja. newsletter_consents registra cada aceptación de una solicitud pendiente con versión 2026-10-11, texto exacto, origen portal-form y fecha UTC. Repetir una solicitud no duplica al suscriptor ni borra las aceptaciones anteriores. Una solicitud nueva después de una baja nunca vuelve a activar directamente el correo.
+
+Protecciones: token de formulario, cookie de sesión separada del administrador, campo trampa y límite de cinco solicitudes válidas por IP/hora. La dirección IP no se almacena en texto: se usa una huella temporal para limitar solicitudes, eliminada tras dos horas. La aceptación no reemplaza la verificación del correo.
+
+Newsletter → Ver suscriptores muestra hasta 50 por página y requiere sesión de editor. No permite activar manualmente solicitudes sin confirmación. Pendientes: envío de confirmación, enlace con token y vencimiento, baja personal y envío SMTP. No iniciar campañas con correos pending. Antes de enviar también debe completarse la información de privacidad y contacto aplicable al servicio.
