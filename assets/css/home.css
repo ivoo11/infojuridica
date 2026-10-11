@@ -47,3 +47,22 @@
 .agenda-hours { color: var(--ink); font-size: 12px; line-height: 1.5; margin-top: 4px; }
 .agenda-hours a { text-decoration: underline; text-underline-offset: 3px; }
 .agenda-venue { color: var(--gray); font-size: 12px; line-height: 1.6; margin-top: 12px; }
+
+/* Espacios constantes para que el contenido no desplace los metadatos. */
+.agenda-track .agenda-copy { min-width: 0; }
+.agenda-track .agenda-copy h3 {
+    line-height: 1.25;
+    height: 3.75em;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.agenda-track .agenda-place { display: grid; grid-template-rows: 18px 18px 39px; gap: 8px; margin-top: 16px; }
+.agenda-track .agenda-place p { margin: 0; min-width: 0; }
+.agenda-track .agenda-dates,
+.agenda-track .agenda-venue { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.agenda-track .agenda-hours { white-space: nowrap; }
+
+.agenda-track .agenda-dates { -webkit-line-clamp: 1; }

@@ -105,5 +105,5 @@ function ij_event_card_schedule(array $days): array {
         $start=$days[0]['start_time'];$end=$days[0]['end_time'];
         $hours=$start ? ($end ? $start.' a '.$end : 'Desde las '.$start) : ($end ? 'Hasta las '.$end : '');
     }
-    return ['dates'=>count($days)>1 ? $date : '', 'hours'=>$hours];
+    return ['dates'=>$date, 'hours'=>$hours ?: 'Horario a confirmar'];
 }
