@@ -10,3 +10,5 @@
 @media (max-width: 700px) { .event-day-row { grid-template-columns: 1fr 1fr; gap: 12px; } .event-day-row label:first-child { grid-column: 1 / -1; } .event-day-row button { grid-column: 1 / -1; justify-self: start; } }
 
 .event-day-row input[type="time"] { font-size: 16px; padding-left: 10px; padding-right: 10px; }
+
+.editor [hidden] { display: none !important; }

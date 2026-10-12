@@ -9,7 +9,7 @@
             <article class="ruling">
                 <a class="opinion-card" href="<?= ij_e($column['url']) ?>">
                     <div class="opinion-author">
-                        <img src="<?= ij_e($column['author_photo'] ?? '/assets/img/autor-placeholder.svg') ?: '/assets/img/autor-placeholder.svg' ?>" alt="Retrato pendiente del autor" width="72" height="88">
+                        <img src="<?= ij_e($column['author_photo'] ?? '/assets/img/autor-placeholder.svg') ?: '/assets/img/autor-placeholder.svg' ?>" alt="<?= ij_e('Retrato de '.($column['author_name'] ?? 'autor')) ?>" width="72" height="72">
                         <div><strong><?= ij_e($column['author_name'] ?? 'Autor de demostración') ?></strong><span><?= ij_e($column['author_role'] ?? 'Nombre y cargo por incorporar') ?></span></div>
                     </div>
                     <span class="category">OPINIÓN<?= ij_live() ? '' : ' · DEMOSTRACIÓN' ?></span>

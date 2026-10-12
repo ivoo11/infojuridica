@@ -35,6 +35,6 @@
 @media(max-width:720px) { .article-page { padding-bottom: 48px; } .article-breadcrumb { margin-bottom: 24px; } .article-body { font-size: 19px; } .article-body blockquote { font-size: 24px; } }
 
 .article-author { display: flex; gap: 18px; align-items: center; margin: 20px 0; }
-.article-author img { width: 72px; height: 88px; object-fit: cover; }
+.article-author img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .article-author strong { font-size: 14px; }
 .article-author p { color: var(--gray); font-size: 12px; margin-top: 8px; }

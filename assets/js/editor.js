@@ -7,6 +7,19 @@
   const snapshot = () => JSON.stringify(Array.from(new FormData(form), ([key, value]) =>
     [key, value instanceof File ? (value.name ? [value.name, value.size, value.lastModified] : '') : value]
   ));
+  const type = form.querySelector('[name="type"]');
+  const imageFields = document.getElementById('publicationImage');
+  const opinionHelp = document.getElementById('opinionImageHelp');
+  function updatePublicationType() {
+    const opinion = type?.value === 'opinion';
+    if (imageFields) {
+      imageFields.hidden = opinion;
+      imageFields.querySelectorAll('input').forEach(field => { field.disabled = opinion; });
+    }
+    if (opinionHelp) opinionHelp.hidden = !opinion;
+  }
+  type?.addEventListener('change', updatePublicationType);
+  updatePublicationType();
   const initialValues = snapshot();
   cancel?.addEventListener('click', event => {
     if (snapshot() !== initialValues && !window.confirm('¿Descartar los cambios sin guardar? La versión guardada se conserva.')) {

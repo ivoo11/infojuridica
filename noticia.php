@@ -24,9 +24,9 @@ require __DIR__ . '/includes/header.php';
             <h1><?= htmlspecialchars($noticia['titulo'], ENT_QUOTES, 'UTF-8') ?></h1>
             <p class="article-summary"><?= htmlspecialchars($noticia['bajada'], ENT_QUOTES, 'UTF-8') ?></p>
             <?php if ($isOpinion): ?>
-            <div class="article-author"><img src="<?= ij_e(($noticia['author_photo'] ?? '') ?: '/assets/img/autor-placeholder.svg') ?>" alt="Retrato pendiente del autor" width="72" height="88"><div><strong><?= ij_e($noticia['author_name'] ?? 'Autor de demostración') ?></strong><p><?= ij_e($noticia['author_role'] ?? 'Nombre y cargo por incorporar') ?></p></div></div>
+            <div class="article-author"><img src="<?= ij_e(($noticia['author_photo'] ?? '') ?: '/assets/img/autor-placeholder.svg') ?>" alt="<?= ij_e('Retrato de '.($noticia['author_name'] ?? 'autor')) ?>" width="72" height="72"><div><strong><?= ij_e($noticia['author_name'] ?? 'Autor de demostración') ?></strong><?php if (!empty($noticia['author_role'])): ?><p><?= ij_e($noticia['author_role']) ?></p><?php endif; ?><p class="meta"><time datetime="<?= ij_e($noticia['fecha']) ?>"><?= ij_date($noticia['fecha']) ?></time></p></div></div>
             <?php endif; ?>
-            <p class="meta">Por <?= ij_e($noticia['author_name'] ?? ($isOpinion ? 'Autor de demostración' : 'Redacción INFO JURÍDICA')) ?> · <time datetime="<?= ij_e($noticia['fecha']) ?>"><?= ij_date($noticia['fecha']) ?></time></p>
+            <?php if (!$isOpinion): ?><p class="meta">Por <?= ij_e($noticia['author_name'] ?? ($isOpinion ? 'Autor de demostración' : 'Redacción INFO JURÍDICA')) ?> · <time datetime="<?= ij_e($noticia['fecha']) ?>"><?= ij_date($noticia['fecha']) ?></time></p><?php endif; ?>
         </header>
         <?php if (!$isOpinion): ?>
         <figure class="article-image">
