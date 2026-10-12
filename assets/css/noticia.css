@@ -38,3 +38,10 @@
 .article-author img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .article-author strong { font-size: 14px; }
 .article-author p { color: var(--gray); font-size: 12px; margin-top: 8px; }
+
+.opinion-heading .article-author { margin: 0 0 28px; gap: 20px; }
+.opinion-heading .article-author img { width: 88px; height: 88px; }
+.opinion-heading .article-author strong { display: block; font-family: var(--sans); font-size: 20px; line-height: 1.3; }
+.opinion-heading .article-author p { font-family: var(--sans); font-size: 15px; line-height: 1.5; margin: 6px 0 0; }
+.opinion-heading .opinion-date { margin-top: 20px; }
+@media(max-width:720px) { .opinion-heading .article-author { gap: 16px; margin-bottom: 24px; } .opinion-heading .article-author img { width: 76px; height: 76px; } .opinion-heading .article-author strong { font-size: 18px; } .opinion-heading .article-author p { font-size: 14px; } }
