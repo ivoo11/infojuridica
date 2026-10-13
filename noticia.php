@@ -3,7 +3,7 @@ require_once __DIR__ . '/app/content.php';
 if (!isset($noticia)) {
     $articleId = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
     $noticia = $articleId === false ? null : ij_post($articleId, 'news');
-    if (!$noticia) { http_response_code(404); echo 'Noticia no encontrada.'; return; }
+    if (!$noticia) { $errorKind='publication';require __DIR__.'/404.php';return; }
 }
 $isOpinion = $isOpinion ?? false;
 if (ij_live() && empty($isPreview) && isset($_SERVER['REQUEST_URI'])) {

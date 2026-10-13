@@ -2,7 +2,7 @@
 require_once __DIR__ . '/app/content.php';
 $categoryNames = ['justicia' => 'Justicia', 'profesion' => 'Profesión', 'colegiatura' => 'Colegiatura', 'universidades' => 'Universidades'];
 $categorySlug = $categorySlug ?? (is_string($_GET['categoria'] ?? null) ? $_GET['categoria'] : '');
-if (!isset($categoryNames[$categorySlug])) { http_response_code(404); echo 'Categoría no encontrada.'; return; }
+if (!isset($categoryNames[$categorySlug])) { require __DIR__.'/404.php';return; }
 $listingTitle = $categoryNames[$categorySlug];
 $listingDescription = 'Noticias de ' . $listingTitle . ' en INFO JURÍDICA.';
 $listingIsCategory = true;

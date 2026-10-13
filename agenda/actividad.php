@@ -5,7 +5,7 @@ if ($isPreview) { require __DIR__.'/../app/admin.php';ij_require_user(); }
 $id=filter_var($_GET['id'] ?? 0,FILTER_VALIDATE_INT);
 $event=null;
 if (ij_live() && $id && $id>0) { ij_events_ready();$s=ij_db()->prepare("SELECT * FROM events WHERE id=?".($isPreview?'':" AND status='published'"));$s->execute([$id]);$event=$s->fetch(); }
-if (!$event) { http_response_code(404);exit('Actividad no encontrada.'); }
+if (!$event) { require __DIR__.'/../404.php';return; }
 $noticia=['titulo'=>$event['title'],'bajada'=>mb_substr($event['description'],0,160)];
 require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';
 ?>
