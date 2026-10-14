@@ -1,15 +1,16 @@
 <?php
-require __DIR__.'/../app/admin.php';$user=ij_require_user();require_once __DIR__.'/../app/slugs.php';ij_slugs_ready();
+require __DIR__.'/../app/admin.php';$user=ij_require_user();require_once __DIR__.'/../app/slugs.php';ij_slugs_ready();require_once __DIR__.'/../app/documents.php';ij_documents_ready();
 $id=filter_var($_GET['id'] ?? 0,FILTER_VALIDATE_INT);if ($id===false || $id<0) { http_response_code(404);exit('Publicación no encontrada.'); }
 $db=ij_db();$categories=$db->query('SELECT * FROM categories ORDER BY id')->fetchAll();$authors=$db->query('SELECT * FROM authors ORDER BY name')->fetchAll();
 $p=['type'=>'news','title'=>'','summary'=>'','body'=>'','category_id'=>$categories[0]['id'],'author_id'=>'','image'=>'','image_alt'=>'','image_caption'=>'','status'=>'draft','published_at'=>null,'featured'=>0,'in_context'=>0,'home_order'=>0];
 if ($id) { $s=$db->prepare('SELECT * FROM posts WHERE id=?');$s->execute([$id]);$p=$s->fetch();if (!$p) { http_response_code(404);exit('Publicación no encontrada.'); } }
+$document=$id ? ij_document((int)$id) : null;$documentLabel=$document['label'] ?? 'Fallo completo';$newDocument=null;
 $slugValue='';if ($id) { $s=$db->prepare('SELECT slug FROM post_urls WHERE post_id=?');$s->execute([$id]);$slugValue=$s->fetchColumn() ?: ''; }
 $originalStatus=$p['status'];$originalDate=$p['published_at'];$wasPublic=$originalStatus==='published' && $originalDate && $originalDate<=ij_now();
 $pastDateValue='';
 $error='';$dateValue=$p['published_at'] ? (new DateTimeImmutable($p['published_at'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Argentina/Buenos_Aires'))->format('Y-m-d\TH:i') : '';
 if ($_SERVER['REQUEST_METHOD']==='POST') {
-    ij_check_csrf();$slugValue=ij_field('slug');$dateValue=ij_field('published_at');$pastDateValue=ij_field('backdated_at');
+    ij_check_csrf();$documentLabel=ij_field('document_label');$slugValue=ij_field('slug');$dateValue=ij_field('published_at');$pastDateValue=ij_field('backdated_at');
     foreach (['type','title','summary','body','category_id','author_id','image_alt','image_caption'] as $key) $p[$key]=in_array($key,['image_alt','image_caption'],true) && !isset($_POST[$key]) ? $p[$key] : ij_field($key);
     $action=ij_field('action');
     $p['in_context']=isset($_POST['in_context']) ? 1 : 0;
@@ -35,6 +36,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         else $p['published_at']=$originalDate;
         $image=$p['type']==='news' ? ij_upload('image') : null;if ($image) $p['image']=$image;
         if ($p['status']==='published' && $p['type']==='news' && !$p['image']) throw new InvalidArgumentException('Agregá una imagen antes de publicar la noticia.');
+        if(!$documentLabel || mb_strlen($documentLabel)>160)throw new InvalidArgumentException('El nombre del documento debe tener entre 1 y 160 caracteres.');
+        $newDocument=ij_document_upload('document');
         $keys=['type','title','summary','body','category_id','author_id','image','image_alt','image_caption','status','published_at','in_context'];
         $values=array_map(fn($k)=>$k==='author_id' && $p[$k]==='' ? null : $p[$k],$keys);
         if ($id) { $s=$db->prepare('UPDATE posts SET '.implode(',',array_map(fn($k)=>$k.'=?',$keys)).',updated_at=UTC_TIMESTAMP() WHERE id=?');$values[]=$id; }
@@ -42,10 +45,14 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         $db->beginTransaction();
         $s->execute($values);
         $savedId=$id ?: (int)$db->lastInsertId();
-        ij_assign_slug($savedId,$p['title'],$slugValue);$db->commit();
+        ij_assign_slug($savedId,$p['title'],$slugValue);
+        if($newDocument){$s=$db->prepare('INSERT INTO post_documents(post_id,filename,label,size_bytes) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE filename=VALUES(filename),label=VALUES(label),size_bytes=VALUES(size_bytes)');$s->execute([$savedId,$newDocument['filename'],$documentLabel,$newDocument['size_bytes']]);}
+        elseif(isset($_POST['remove_document'])){$s=$db->prepare('DELETE FROM post_documents WHERE post_id=?');$s->execute([$savedId]);}
+        elseif($document){$s=$db->prepare('UPDATE post_documents SET label=? WHERE post_id=?');$s->execute([$documentLabel,$savedId]);}
+        $db->commit();
         $notice=['draft'=>'borrador','publish'=>'publicada','update'=>'actualizada','schedule'=>'programada','backdate'=>'publicada'][$action];
         header('Location: /admin/?guardado='.$notice);exit;
-    } catch (InvalidArgumentException $e) { if ($db->inTransaction()) $db->rollBack();$error=$e->getMessage(); }
+    } catch (InvalidArgumentException $e) { if ($db->inTransaction()) $db->rollBack();$error=$e->getMessage();if($newDocument){$file=ij_document_file($newDocument);if($file)unlink($file);$newDocument=null;} }
 }
 $pageTitle=$id ? 'Editar publicación' : 'Nueva publicación';require __DIR__.'/_head.php';
 ?>
@@ -59,6 +66,7 @@ $pageTitle=$id ? 'Editar publicación' : 'Nueva publicación';require __DIR__.'/
 <label>Autor<select name="author_id"><option value="">Redacción INFO JURÍDICA</option><?php foreach ($authors as $a): ?><option value="<?= $a['id'] ?>" <?= $p['author_id']==$a['id']?'selected':'' ?>><?= ij_e($a['name']) ?></option><?php endforeach; ?></select><span class="help">Obligatorio para Opinión. Podés cargarlo en <a href="/admin/autores.php">Autores</a>.</span></label>
 <p id="opinionImageHelp" class="help" <?= $p['type']!=='opinion' ? 'hidden' : '' ?>>La columna usa el retrato cargado en Autores. Se muestra en círculo junto a la firma; no necesitás una imagen adicional.</p>
 <fieldset id="publicationImage" <?= $p['type']==='opinion' ? 'hidden' : '' ?>><legend>Imagen de la publicación</legend><?php if ($p['image']): ?><img class="image-preview" src="<?= ij_e($p['image']) ?>" alt="Imagen actual"><?php endif; ?><label>Subir o reemplazar imagen<input type="file" name="image" accept="image/jpeg,image/png,image/webp"><span class="help">JPG, PNG o WebP. Hasta 5 MB y 20 megapíxeles. Se optimiza al guardar.</span></label><label>Descripción de la imagen<input name="image_alt" maxlength="240" value="<?= ij_e($p['image_alt']) ?>"></label><label>Epígrafe y crédito<input name="image_caption" maxlength="500" value="<?= ij_e($p['image_caption']) ?>"></label></fieldset>
+<details class="document-editor"><summary>Adjuntar fallo o documento PDF (opcional)</summary><p class="help">Se mostrará al final de esta publicación, con opciones para ver y descargar. Si no adjuntás un PDF, no aparece ningún bloque.</p><?php if($document):?><p>Documento actual: <?= ij_e($document['label']) ?> · <?= number_format($document['size_bytes']/1024/1024,1,',','.') ?> MB · <a href="/documento.php?id=<?= (int)$id ?>&amp;preview=1" target="_blank" rel="noopener">Ver PDF</a></p><label class="check"><input type="checkbox" name="remove_document">Quitar documento al guardar</label><?php endif;?><label>Nombre del documento<input name="document_label" maxlength="160" value="<?= ij_e($documentLabel) ?>"></label><label><?= $document?'Reemplazar PDF':'Subir PDF' ?><input type="file" name="document" accept="application/pdf,.pdf"><span class="help">Hasta 10 MB. Se guarda al guardar o publicar la nota.</span></label></details>
 <fieldset><legend>Dónde aparece en el portal</legend><p>Todas las noticias publicadas aparecen en Últimas noticias por fecha. La principal y las tres laterales se eligen por separado en <a href="/admin/portada.php" target="_blank" rel="noopener">Portada</a>; publicar una noticia nueva no cambia esa selección.</p><label class="check"><input type="checkbox" name="in_context" <?= $p['in_context']?'checked':'' ?>>Incluir también en En contexto</label><p class="help">Para guías y notas explicativas. Las columnas aparecen en Opinión.</p></fieldset>
 <section class="publish-panel" aria-labelledby="publishTitle"><h2 id="publishTitle"><?= $originalStatus==='published' ? 'Guardar la edición' : '¿Qué querés hacer con esta publicación?' ?></h2><p><?= $wasPublic ? 'Está publicada. Guardar cambios actualiza la nota sin cambiar su fecha original.' : ($originalStatus==='published' ? 'Está programada. Guardar cambios conserva su fecha de publicación.' : 'Un borrador es privado. Publicar ahora hace visible la nota en el portal local.') ?></p><div class="publish-actions"><button type="submit" name="action" value="<?= $originalStatus==='published'?'update':'publish' ?>" class="primary"><?= $originalStatus==='published'?'Guardar cambios':'Publicar ahora' ?></button><button type="submit" name="action" value="draft"><?= $originalStatus==='published'?'Ocultar y guardar borrador':'Guardar borrador' ?></button><a class="button" id="cancelChanges" href="/admin/">Cancelar cambios</a></div><?php if ($wasPublic): ?><p class="help">Ocultar y guardar borrador retira la nota del portal. Podés volver a publicarla después.</p><?php endif; ?>
 <details class="schedule-panel"><summary><?= $originalStatus==='published' && !$wasPublic?'Cambiar programación':'Programar para más adelante' ?></summary><label>Fecha y hora de publicación · Argentina<input type="datetime-local" name="published_at" value="<?= ij_e($dateValue) ?>"></label><button type="submit" name="action" value="schedule">Programar publicación</button><p class="help">Permanece oculta hasta la fecha elegida.</p></details>

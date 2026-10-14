@@ -47,6 +47,9 @@ require __DIR__ . '/includes/header.php';
             <p>El contenido definitivo podrá incorporar enlaces a fuentes y documentos. La consulta electoral mantiene su acceso independiente desde <a href="/padron/">el padrón</a>.</p>
             <?php endif; ?>
         </div>
+        <?php require_once __DIR__.'/app/documents.php';$articleDocument=isset($noticia['id']) ? ij_document((int)$noticia['id']) : null;if($articleDocument && ij_document_file($articleDocument)): $documentUrl='/documento.php?id='.(int)$noticia['id'].(!empty($isPreview)?'&preview=1':''); ?>
+        <section class="article-document" aria-labelledby="documentTitle"><h2 id="documentTitle"><?= ij_e($articleDocument['label']) ?></h2><p>PDF · <?= number_format($articleDocument['size_bytes']/1024/1024,1,',','.') ?> MB</p><div><a href="<?= ij_e($documentUrl) ?>" target="_blank" rel="noopener">Ver documento</a><a href="<?= ij_e($documentUrl.'&download=1') ?>">Descargar PDF</a></div></section>
+        <?php endif; ?>
         <?php require __DIR__ . '/includes/share-article.php'; ?>
         <div class="article-return"><a class="article-back" href="/">Volver a la portada</a></div>
     </article>

@@ -123,3 +123,9 @@ El banner compartido permite ingresar el correo y suscribirse en la misma págin
 La baja automática utiliza un enlace personal incluido en cada correo. GET muestra la confirmación y POST registra la baja; también admite List-Unsubscribe=One-Click. El historial de consentimiento se conserva. Una nueva suscripción voluntaria vuelve a activar la dirección e invalida los enlaces de baja anteriores.
 
 Newsletter → Ver suscriptores permite activar solicitudes antiguas pendientes únicamente si tienen consentimiento registrado. Los envíos comprueban el estado activo antes de entregar cada correo. Para configurar SMTP, previsualizar, enviar una prueba y preparar una edición, consultar [newsletter-envios.md](newsletter-envios.md). La información del responsable de datos y contacto todavía debe completarse.
+
+## Fallo o documento adjunto
+
+En el editor de publicaciones, abrir «Adjuntar fallo o documento PDF (opcional)», subir el PDF y guardar. Se permite un archivo por publicación de hasta 10 MB y un nombre visible editable, por defecto «Fallo completo». Si PHP tiene un límite de subida inferior, ampliarlo en Hostinger (upload_max_filesize al menos 10M, post_max_size mayor que el PDF más los demás campos). La tabla post_documents se crea automáticamente, o puede importarse database/post-documents.sql sin reemplazar tablas existentes.
+
+El bloque aparece después del cuerpo y antes de compartir, solo si hay un adjunto. «Ver documento» abre otra pestaña y «Descargar PDF» fuerza la descarga. Se puede reemplazar o quitar desde el editor; subir un archivo nuevo reemplaza el anterior aunque se haya marcado quitar. Los PDFs se guardan en uploads/documents con acceso directo denegado mediante .htaccess; documento.php comprueba que la nota esté publicada y su fecha haya llegado. Un editor autenticado puede abrirlos desde la vista previa. Ocultar una nota también oculta su PDF. Los registros de adjuntos se eliminan en cascada al borrar la publicación.
