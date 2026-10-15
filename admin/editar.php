@@ -4,6 +4,8 @@ $id=filter_var($_GET['id'] ?? 0,FILTER_VALIDATE_INT);if ($id===false || $id<0) {
 $db=ij_db();$categories=$db->query('SELECT * FROM categories ORDER BY id')->fetchAll();$authors=$db->query('SELECT * FROM authors ORDER BY name')->fetchAll();
 $p=['type'=>'news','title'=>'','summary'=>'','body'=>'','category_id'=>$categories[0]['id'],'author_id'=>'','image'=>'','image_alt'=>'','image_caption'=>'','status'=>'draft','published_at'=>null,'featured'=>0,'in_context'=>0,'home_order'=>0];
 if ($id) { $s=$db->prepare('SELECT * FROM posts WHERE id=?');$s->execute([$id]);$p=$s->fetch();if (!$p) { http_response_code(404);exit('Publicación no encontrada.'); } }
+require_once __DIR__.'/../app/editor-recovery.php';
+$recoveryKey=$id ? 'post-'.$id : (is_string($_GET['recovery'] ?? null) && ij_recovery_key('new-'.$_GET['recovery']) ? 'new-'.$_GET['recovery'] : 'new-'.bin2hex(random_bytes(16)));
 $document=$id ? ij_document((int)$id) : null;$documentLabel=$document['label'] ?? 'Fallo completo';$newDocument=null;
 $slugValue='';if ($id) { $s=$db->prepare('SELECT slug FROM post_urls WHERE post_id=?');$s->execute([$id]);$slugValue=$s->fetchColumn() ?: ''; }
 $originalStatus=$p['status'];$originalDate=$p['published_at'];$wasPublic=$originalStatus==='published' && $originalDate && $originalDate<=ij_now();
@@ -50,13 +52,15 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         elseif(isset($_POST['remove_document'])){$s=$db->prepare('DELETE FROM post_documents WHERE post_id=?');$s->execute([$savedId]);}
         elseif($document){$s=$db->prepare('UPDATE post_documents SET label=? WHERE post_id=?');$s->execute([$documentLabel,$savedId]);}
         $db->commit();
+        ij_recovery_clear((int)$user['id'],$recoveryKey);$_SESSION['editor_saved']='ij-editor-'.$user['id'].'-'.$recoveryKey;
         $notice=['draft'=>'borrador','publish'=>'publicada','update'=>'actualizada','schedule'=>'programada','backdate'=>'publicada'][$action];
         header('Location: /admin/?guardado='.$notice);exit;
     } catch (InvalidArgumentException $e) { if ($db->inTransaction()) $db->rollBack();$error=$e->getMessage();if($newDocument){$file=ij_document_file($newDocument);if($file)unlink($file);$newDocument=null;} }
 }
 $pageTitle=$id ? 'Editar publicación' : 'Nueva publicación';require __DIR__.'/_head.php';
 ?>
-<form class="editor" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?= ij_csrf() ?>">
+<div id="editorRecovery" class="editor-recovery" role="status" aria-live="polite"><span id="editorSaveStatus">Los cambios de texto se respaldan automáticamente en este dispositivo.</span><div id="editorRecoveryActions" hidden><button type="button" id="restoreEditor">Recuperar texto</button><button type="button" id="discardEditorRecovery">Descartar respaldo</button></div><a id="editorLogin" hidden href="/admin/login.php?next=<?= rawurlencode('/admin/editar.php'.($id?'?id='.$id:'?recovery='.substr($recoveryKey,4))) ?>">Volver a iniciar sesión y continuar</a></div>
+<form class="editor" data-recovery-key="<?= ij_e($recoveryKey) ?>" data-user-id="<?= (int)$user['id'] ?>" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?= ij_csrf() ?>">
 <?php if ($error): ?><p class="error" role="alert"><?= ij_e($error) ?></p><?php endif; ?>
 <div class="form-grid"><label>Tipo<select name="type"><option value="news" <?= $p['type']==='news'?'selected':'' ?>>Noticia</option><option value="opinion" <?= $p['type']==='opinion'?'selected':'' ?>>Columna de opinión</option></select></label><label>Categoría<select name="category_id"><?php foreach ($categories as $c): ?><option value="<?= $c['id'] ?>" <?= $p['category_id']==$c['id']?'selected':'' ?>><?= ij_e($c['name']) ?></option><?php endforeach; ?></select></label></div>
 <label>Título<input name="title" value="<?= ij_e($p['title']) ?>" maxlength="240" required></label>
@@ -73,4 +77,5 @@ $pageTitle=$id ? 'Editar publicación' : 'Nueva publicación';require __DIR__.'/
 <details class="schedule-panel" <?= ($action ?? '')==='backdate' ? 'open' : '' ?>><summary>Publicar con fecha anterior</summary><p class="help">Para la carga inicial del archivo. La nota queda visible al guardar, con la fecha elegida, y se ordena por esa fecha en Últimas noticias. Su fecha de creación interna se conserva.</p><label>Fecha y hora que mostrará la nota · Argentina<input type="datetime-local" name="backdated_at" value="<?= ij_e($pastDateValue) ?>"></label><button type="submit" name="action" value="backdate"><?= $wasPublic?'Guardar con esta fecha':'Publicar con esta fecha' ?></button></details></section>
 <div class="editor-secondary-actions"><?php if ($id): ?><a class="button button-danger" href="/admin/publicacion-accion.php?id=<?= (int)$id ?>&amp;accion=delete">Eliminar publicación</a> <a class="button" href="/admin/preview.php?id=<?= $id ?>" target="_blank" rel="noopener">Vista previa de la versión guardada</a><?php endif; ?></div></form>
 <script defer src="/assets/js/editor.js?v=<?= filemtime(__DIR__.'/../assets/js/editor.js') ?>"></script>
+<script defer src="/assets/js/editor-recovery.js?v=<?= filemtime(__DIR__.'/../assets/js/editor-recovery.js') ?>"></script>
 <?php require __DIR__.'/_foot.php'; ?>

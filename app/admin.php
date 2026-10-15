@@ -17,7 +17,15 @@ function ij_user(): ?array {
     $s=ij_db()->prepare('SELECT id,email,name FROM users WHERE id=? AND active=1');$s->execute([$_SESSION['user_id']]);
     return $s->fetch() ?: null;
 }
-function ij_require_user(): array { $u=ij_user(); if (!$u) { header('Location: /admin/login.php'); exit; } return $u; }
+function ij_require_user(): array {
+    $u=ij_user();
+    if (!$u) {
+        $next=$_SERVER['REQUEST_URI'] ?? '';
+        $returnToEditor=($_SERVER['REQUEST_METHOD'] ?? '')==='GET' && preg_match('~^/admin/editar\.php(?:\?(?:id=[1-9][0-9]*|recovery=[a-f0-9]{32}))?$~D',$next);
+        header('Location: /admin/login.php'.($returnToEditor?'?next='.rawurlencode($next):''));exit;
+    }
+    return $u;
+}
 function ij_csrf(): string { return $_SESSION['csrf'] ??= bin2hex(random_bytes(32)); }
 function ij_check_csrf(): void { if (!is_string($_POST['csrf'] ?? null) || !hash_equals(ij_csrf(),$_POST['csrf'])) { http_response_code(403); exit('La sesión del formulario venció. Volvé a cargar la página.'); } }
 function ij_field(string $key): string { return is_string($_POST[$key] ?? null) ? trim($_POST[$key]) : ''; }

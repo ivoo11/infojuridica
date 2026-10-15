@@ -1,6 +1,8 @@
 <?php
 require __DIR__.'/../app/admin.php';
-if (ij_user()) { header('Location: /admin/'); exit; }
+$next=is_string($_GET['next'] ?? null)?$_GET['next']:'';
+if(!preg_match('~^/admin/editar\.php(?:\?(?:id=[1-9][0-9]*|recovery=[a-f0-9]{32}))?$~D',$next))$next='/admin/';
+if (ij_user()) { header('Location: '.$next); exit; }
 $error='';
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     ij_check_csrf();
@@ -17,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         if ($found && $valid) {
             $s=$db->prepare('DELETE FROM login_attempts WHERE key_hash=?');$s->execute([$key]);$db->commit();
             session_regenerate_id(true);$_SESSION['user_id']=$found['id'];$_SESSION['csrf']=bin2hex(random_bytes(32));
-            header('Location: /admin/');exit;
+            header('Location: '.$next);exit;
         }
         $s=$db->prepare('UPDATE login_attempts SET attempts=attempts+1 WHERE key_hash=?');$s->execute([$key]);$db->commit();
         $error='El correo o la contraseña no son correctos.';

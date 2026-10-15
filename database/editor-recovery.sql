@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS editor_recovery (
+ user_id BIGINT UNSIGNED NOT NULL,
+ editor_key VARCHAR(64) NOT NULL,
+ payload MEDIUMTEXT NOT NULL,
+ saved_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY(user_id,editor_key),
+ FOREIGN KEY(user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
