@@ -28,9 +28,22 @@ function ij_date(string $date): string {
     $months = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
     return $d->format('d') . ' ' . $months[(int)$d->format('n') - 1] . ' ' . $d->format('Y');
 }
-function ij_inline(string $text): string {
-    // Escape editorial text before introducing the only permitted inline tag.
-    return preg_replace('/\*\*([^\r\n*]+)\*\*/u', '<strong>$1</strong>', ij_e($text));
+function ij_link_url(string $url): bool {
+    $parts=parse_url($url);
+    return strlen($url)<=2048 && !preg_match('/[\s<>"\x00-\x1f]/u',$url) && filter_var($url,FILTER_VALIDATE_URL) && is_array($parts) && in_array(strtolower($parts['scheme'] ?? ''),['http','https'],true) && !empty($parts['host']) && !isset($parts['user']) && !isset($parts['pass']);
+}
+function ij_inline(string $text,int $depth=0): string {
+    if($depth>8)return ij_e($text);
+    $pattern='~\[[^\]\r\n]+\]\(https?://[^\s<>()]+\)|\*\*[^\r\n*]+\*\*~iu';
+    preg_match_all($pattern,$text,$matches,PREG_OFFSET_CAPTURE);$html='';$cursor=0;
+    foreach($matches[0] as [$token,$offset]){
+        $html.=ij_e(substr($text,$cursor,$offset-$cursor));
+        if(str_starts_with($token,'**'))$html.='<strong>'.ij_inline(substr($token,2,-2),$depth+1).'</strong>';
+        elseif(preg_match('~^\[([^\]\r\n]+)\]\((https?://[^\s<>()]+)\)$~iu',$token,$link) && ij_link_url($link[2]))$html.='<a href="'.ij_e($link[2]).'" target="_blank" rel="noopener noreferrer">'.ij_inline($link[1],$depth+1).'</a>';
+        else $html.=ij_e($token);
+        $cursor=$offset+strlen($token);
+    }
+    return $html.ij_e(substr($text,$cursor));
 }
 function ij_body(string $body): string {
     // Texto plano: párrafos, ## subtítulos y > citas; nunca ejecuta HTML editorial.

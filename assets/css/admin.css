@@ -18,3 +18,5 @@
 .post-actions form { margin: 0; }
 
 .editor-recovery{max-width:850px;padding:14px 18px;margin:0 0 20px;border-left:3px solid #711b2d;background:#f5f3ee;font-size:14px}.editor-recovery div{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}.editor-recovery [hidden]{display:none!important}.editor-recovery a{display:inline-block;margin-top:10px}.editor-recovery button{padding:8px 12px}.editor-recovery.is-error{background:#f4e8ea}
+
+.editor-link-panel{padding:20px;border:1px solid #d7d2c8;margin:12px 0;background:#f5f3ee}.editor-link-panel label{margin-bottom:14px}.editor-body-preview a{color:#711b2d;text-decoration:underline;text-underline-offset:3px}.editor-link-panel [hidden]{display:none!important}

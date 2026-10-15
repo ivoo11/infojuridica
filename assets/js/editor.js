@@ -26,18 +26,62 @@
       event.preventDefault();
     }
   });
-  function inlineNodes(element, text) {
-    const pattern = /\*\*([^\r\n*]+)\*\*/g;
+  function validLink(value) {
+    if (value.length > 2048 || /[\s<>"\x00-\x1f]/u.test(value)) return null;
+    try { const url = new URL(value); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password ? url.href.replace(/\(/g, '%28').replace(/\)/g, '%29') : null; } catch (e) { return null; }
+  }
+  function inlineNodes(element, text, depth = 0) {
+    if (depth > 8) { element.append(document.createTextNode(text)); return; }
+    const pattern = /\[[^\]\r\n]+\]\(https?:\/\/[^\s<>()]+\)|\*\*[^\r\n*]+\*\*/giu;
     let cursor = 0;
     for (const match of text.matchAll(pattern)) {
       element.append(document.createTextNode(text.slice(cursor, match.index)));
-      const strong = document.createElement('strong');
-      strong.textContent = match[1];
-      element.append(strong);
-      cursor = match.index + match[0].length;
+      const token = match[0];
+      if (token.startsWith('**')) { const strong = document.createElement('strong'); inlineNodes(strong, token.slice(2, -2), depth + 1); element.append(strong); }
+      else {
+        const link = token.match(/^\[([^\]\r\n]+)\]\((https?:\/\/[^\s<>()]+)\)$/iu);
+        const href = link && validLink(link[2]);
+        if (href) { const anchor = document.createElement('a'); anchor.href = href; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; inlineNodes(anchor, link[1], depth + 1); element.append(anchor); }
+        else element.append(document.createTextNode(token));
+      }
+      cursor = match.index + token.length;
     }
     element.append(document.createTextNode(text.slice(cursor)));
   }
+  const linkPanel = document.getElementById('linkEditor');
+  const linkText = document.getElementById('linkText');
+  const linkUrl = document.getElementById('linkUrl');
+  const linkError = document.getElementById('linkError');
+  const removeLink = document.getElementById('removeLink');
+  let linkRange = [0, 0];
+  function closeLink() {
+    linkPanel.hidden = true; linkText.disabled = true; linkUrl.disabled = true; linkError.hidden = true; input.focus();
+  }
+  function openLink() {
+    if (!linkPanel) return;
+    let start = input.selectionStart, end = input.selectionEnd;
+    for (const match of input.value.matchAll(/\[([^\]\r\n]+)\]\((https?:\/\/[^\s<>()]+)\)/giu)) {
+      if (start >= match.index && end <= match.index + match[0].length) { start = match.index; end = start + match[0].length; break; }
+    }
+    linkRange = [start, end];
+    const selection = input.value.slice(start, end);
+    const existing = selection.match(/^\[([^\]\r\n]+)\]\((https?:\/\/[^\s<>()]+)\)$/iu);
+    linkText.value = existing ? existing[1] : selection.trim(); linkUrl.value = existing ? existing[2] : '';
+    removeLink.hidden = !existing; linkError.hidden = true; linkPanel.hidden = false; linkText.disabled = false; linkUrl.disabled = false;
+    (linkText.value ? linkUrl : linkText).focus();
+  }
+  function applyLink() {
+    const text = linkText.value.trim(), href = validLink(linkUrl.value.trim());
+    if (!text || /[\[\]\r\n]/.test(text) || !href) { linkError.textContent = 'Escribí un texto sin saltos de línea y una dirección válida que comience con https:// o http://.'; linkError.hidden = false; return; }
+    input.setRangeText(`[${text}](${href})`, ...linkRange, 'select');
+    input.dispatchEvent(new Event('input', { bubbles: true })); document.getElementById('bodyPreview').open = true; closeLink();
+  }
+  document.querySelector('[data-inline="link"]')?.addEventListener('click', openLink);
+  document.getElementById('applyLink')?.addEventListener('click', applyLink);
+  document.getElementById('cancelLink')?.addEventListener('click', closeLink);
+  removeLink?.addEventListener('click', () => { input.setRangeText(linkText.value, ...linkRange, 'select'); input.dispatchEvent(new Event('input', { bubbles: true })); closeLink(); });
+  linkPanel?.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); closeLink(); } else if (event.key === 'Enter') { event.preventDefault(); applyLink(); } });
+  input.addEventListener('keydown', event => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openLink(); } });
   function boldSelection() {
     let start = input.selectionStart, end = input.selectionEnd;
     let selected = input.value.slice(start, end);
@@ -107,6 +151,7 @@
         if (node.nodeType !== Node.ELEMENT_NODE || ignored.has(node.tagName)) return '';
         if (node.tagName === 'BR') return '\n';
         let text = Array.from(node.childNodes, read).join('');
+        if (node.tagName === 'A') { const href = validLink(node.getAttribute('href') || ''); if (href && text.trim() && !/[\[\]\r\n]/.test(text)) text = `[${text.trim()}](${href})`; }
         if (['STRONG', 'B'].includes(node.tagName) && text.trim() && !/[\r\n]/.test(text)) text = '**' + text + '**';
         if (blocks.has(node.tagName)) text = '\n\n' + text.trim() + '\n\n';
         return text;
