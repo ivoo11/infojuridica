@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../app/content.php'; $homeOpinions = array_slice(ij_posts('opinion'),0,3); if (!$homeOpinions) return; ?>
+<?php require_once __DIR__ . '/../app/content.php'; $allOpinions=ij_posts('opinion');$homeOpinions = array_slice($allOpinions,0,3); if (!$homeOpinions) return; ?>
 <section class="section rulings-section" id="opinion">
     <div class="container">
         <div class="section-header">
@@ -19,5 +19,6 @@
             </article>
             <?php endforeach; ?>
         </div>
+        <?php if(count($allOpinions)>3):?><div class="home-section-more"><a href="/opinion/">Todas las columnas</a></div><?php endif;?>
     </div>
 </section>

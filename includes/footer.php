@@ -15,7 +15,7 @@
             </nav>
             <nav class="footer-column" aria-label="Opinión y actividades">
                 <strong>Comunidad</strong>
-                <a href="/#opinion">Opinión</a>
+                <a href="<?= ij_e(ij_opinion_url()) ?>">Opinión</a>
                 <a href="/agenda/">Agenda</a>
                 <a href="/#en-contexto">En contexto</a>
             </nav>

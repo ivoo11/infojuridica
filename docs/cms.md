@@ -153,3 +153,7 @@ Se crean home_slot_pins y el estado home_auto_seen en site_settings sin modifica
 ## Newsletter en el lateral de portada
 
 La home incluye una pieza editorial de suscripción debajo de las noticias secundarias: fondo bordó, titular en serif y formulario integrado. Reutiliza el mismo endpoint, texto de aceptación, CSRF, campo trampa y alta directa del newsletter existente; no genera correos de confirmación. Al aparecer este bloque se omite el banner de newsletter del pie solo en la home. En las páginas interiores, y si no hay lateral de noticias, se mantiene el banner compartido. En tablet la pieza ocupa todo el ancho del lateral y en móvil queda debajo de las secundarias. No altera las posiciones ni las fijaciones de portada.
+
+## Archivo de Opinión
+
+/opinion/ reúne las columnas publicadas y visibles, con autor, retrato circular, bajada y fecha, de más reciente a más antigua y con seis columnas por página. La home sigue mostrando solo las últimas tres. «Todas las columnas» aparece debajo de ese bloque únicamente cuando hay más de tres columnas visibles; en ese mismo umbral, Opinión en el menú y el footer lleva al archivo en lugar de /#opinion. Los borradores y las publicaciones programadas aún futuras no se cuentan. El cambio se activa automáticamente sin configuración del CMS.

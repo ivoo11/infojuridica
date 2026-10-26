@@ -7,7 +7,7 @@
         <a href="/colegiatura/">Colegiatura</a>
         <a href="/universidades/">Universidades</a>
         <a href="/agenda/">Agenda</a>
-        <a href="/#opinion">Opinión</a>
+        <a href="<?= ij_e(ij_opinion_url()) ?>">Opinión</a>
 
         <button
             class="search-toggle"

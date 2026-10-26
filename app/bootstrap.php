@@ -19,6 +19,14 @@ function ij_db(): PDO {
     }
     return $db;
 }
+function ij_opinion_url(): string {
+    static $url;
+    if($url===null){
+        $count=ij_live() ? (int)ij_db()->query("SELECT COUNT(*) FROM posts WHERE type='opinion' AND status='published' AND published_at<=UTC_TIMESTAMP()")->fetchColumn() : 0;
+        $url=$count>3 ? '/opinion/' : '/#opinion';
+    }
+    return $url;
+}
 function ij_e($value): string { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function ij_now(): string { return gmdate('Y-m-d H:i:s'); }
 function ij_date(string $date): string {
