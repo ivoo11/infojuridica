@@ -141,3 +141,11 @@ La tabla se crea automáticamente desde database/editor-recovery.sql. No cambia 
 ## Enlaces dentro del cuerpo
 
 Seleccionar una palabra o frase y pulsar Enlace (Ctrl+K o ⌘K). Completar el texto y una dirección http:// o https:// y pulsar Aplicar enlace; Cancelar conserva el cuerpo anterior. Para editar o quitar un enlace, ubicar el cursor dentro de él y volver a pulsar Enlace. El editor conserva la sintaxis [texto](https://direccion) en el cuerpo y muestra el resultado en Ver formato del texto. Las URLs con paréntesis se codifican al insertarlas. Los enlaces se abren en otra pestaña y se muestran en bordó institucional, subrayados. También se conservan los enlaces absolutos válidos al pegar contenido HTML. El renderizado escapa HTML y rechaza protocolos ejecutables y URLs con credenciales. No requiere cambios de base de datos.
+
+## Portada automática y posiciones fijas
+
+La selección existente se conserva al activar esta mejora. Cuando aparece una noticia publicada nueva (incluida una programada al llegar su fecha), se completan principal y tres laterales por published_at descendente y por id en caso de empate. Opiniones, borradores y noticias futuras quedan fuera. Los cambios de contenido no disparan rotación. Las notas con fecha anterior se ubican por esa fecha, no por el momento de edición.
+
+Portada permite cambiar las cuatro noticias manualmente. Una selección sin fijar dura hasta la próxima noticia nueva. «Fijar esta posición» reserva ese lugar y excluye esa noticia del resto para evitar repeticiones. «Completar con las más recientes» guarda los fijos elegidos y recalcula ahora los demás lugares. Cancelar cambios conserva su confirmación habitual. Una posición fija cuya nota se oculta queda reservada y no muestra contenido privado; eliminar esa noticia libera el lugar y su fijación. Sin suficientes noticias visibles, quedan posiciones vacías. Últimas noticias conserva su orden independiente y sigue mostrando todas las noticias publicadas.
+
+Se crean home_slot_pins y el estado home_auto_seen en site_settings sin modificar los registros existentes de publicaciones. Los SQL están en database/home-automatic.sql. La sincronización bloquea posiciones dentro de una transacción para que las actualizaciones de portada no mezclen selecciones.
