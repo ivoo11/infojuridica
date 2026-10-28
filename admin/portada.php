@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 }
 $pageTitle='Portada';require __DIR__.'/_head.php';
 ?>
+<p><a class="button" href="/admin/banner.php">Editar banner con cuenta regresiva</a></p>
 <p>La portada se actualiza con las noticias más recientes por fecha de publicación. Podés elegir otras a mano y fijar las posiciones que quieras conservar cuando haya novedades.</p>
 <?php if (isset($_GET['guardado'])): ?><p class="success" role="status">Selección de portada guardada.</p><?php endif; ?>
 <form class="editor" method="post"><input type="hidden" name="csrf" value="<?= ij_csrf() ?>"><?php if ($error): ?><p class="error" role="alert"><?= ij_e($error) ?></p><?php endif; ?>
