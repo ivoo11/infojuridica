@@ -1,13 +1,14 @@
 .side-news:has(>.newsletter-gap-slot){position:relative}
 .newsletter-gap-slot{position:absolute;left:0;right:0;bottom:0;visibility:hidden;pointer-events:none}
 .newsletter-gap-slot.is-filled{visibility:visible;pointer-events:auto}
-.newsletter-gap-slot .newsletter-signup{margin:0;padding:22px;background:#711b2d;color:#f5f0e7;border:0}
+.newsletter-gap-slot .newsletter-signup{margin:0;padding:16px;background:#711b2d;color:#f5f0e7;border:0}
 .newsletter-gap-slot .newsletter-signup-inner{display:block;width:100%;margin:0}
 .newsletter-gap-slot .newsletter-signup-kicker{display:none}
-.newsletter-gap-slot .newsletter-signup h2{font-size:28px;color:#f5f0e7;margin:0 0 8px;line-height:1.1}
-.newsletter-gap-slot .newsletter-signup-copy p{font-size:13px;color:#ead8d8;line-height:1.4;margin:0 0 16px}
+.newsletter-gap-slot .newsletter-inline-form{margin-top:14px}
+.newsletter-gap-slot .newsletter-signup h2{font-size:24px;color:#f5f0e7;margin:0 0 8px;line-height:1.1}
+.newsletter-gap-slot .newsletter-signup-copy p{display:none}
 .newsletter-gap-slot .newsletter-input-row button{background:#f5f0e7;color:#711b2d;border-color:#f5f0e7;padding:10px;font-size:12px}
 .newsletter-gap-slot .newsletter-input-row input{padding:10px;font-size:16px;border-color:#f5f0e7}
-.newsletter-gap-slot .newsletter-signup-note{color:#ead8d8;font-size:10px;line-height:1.4;margin:12px 0 0}
+.newsletter-gap-slot .newsletter-signup .newsletter-signup-note{color:#ead8d8;font-size:10px;line-height:1.4;margin:12px 0 0}
 .newsletter-gap-slot .newsletter-signup-status{color:#f5f0e7;font-size:12px;line-height:1.4}
 @media(max-width:1050px){.newsletter-gap-slot{display:none}}

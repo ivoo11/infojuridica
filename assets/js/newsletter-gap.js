@@ -19,7 +19,7 @@
     const top = last.getBoundingClientRect().bottom + 18;
     const bottom = lead.getBoundingClientRect().bottom;
     const available = bottom - top;
-    if (available < 220) { restore(); return; }
+    if (available <= 0) { restore(); return; }
     slot.style.top = `${top - slot.parentElement.getBoundingClientRect().top}px`;
     if (signup.parentNode !== slot) slot.append(signup);
     if (signup.getBoundingClientRect().height <= available) slot.classList.add('is-filled');
