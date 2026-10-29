@@ -6,6 +6,9 @@ if (!isset($noticia)) {
     if (!$noticia) { $errorKind='publication';require __DIR__.'/404.php';return; }
 }
 $isOpinion = $isOpinion ?? false;
+$isUnlisted = ($noticia['status'] ?? '') === 'unlisted';
+if ($isUnlisted) { header('X-Robots-Tag: noindex, nofollow, noarchive');header('Cache-Control: private, no-store'); }
+
 if (ij_live() && empty($isPreview) && isset($_SERVER['REQUEST_URI'])) {
     $path=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH);
     if ($path!==$noticia['url']) { header('Location: '.$noticia['url'],true,301);exit; }

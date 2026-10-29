@@ -27,7 +27,7 @@ function ij_posts(?string $type = null): array {
 function ij_post(int $id, string $type, bool $preview = false): ?array {
     if (!ij_live()) { foreach (ij_posts($type) as $p) if ($p['id']===$id) return $p; return null; }
     $sql=ij_select().' WHERE p.id=? AND p.type=?';
-    if (!$preview) $sql .= " AND p.status='published' AND p.published_at <= UTC_TIMESTAMP()";
+    if (!$preview) $sql .= " AND (p.status='unlisted' OR (p.status='published' AND p.published_at <= UTC_TIMESTAMP()))";
     $stmt=ij_db()->prepare($sql);$stmt->execute([$id,$type]);$row=$stmt->fetch();
     return $row ? ij_post_map($row) : null;
 }

@@ -15,7 +15,7 @@
     <?php require __DIR__ . '/social-article.php'; ?>
 
     <!-- TIPOGRAFÍAS -->
-    <?php if (ij_live() && empty($isPreview)): ?><link rel="canonical" href="<?= ij_e('https://infojuridica.com.ar'.$noticia['url']) ?>"><?php endif; ?>
+    <?php if (ij_live() && empty($isPreview) && empty($isUnlisted)): ?><link rel="canonical" href="<?= ij_e('https://infojuridica.com.ar'.$noticia['url']) ?>"><?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -26,7 +26,7 @@
     <link rel="stylesheet"
       href="/assets/css/styles.css?v=<?= filemtime(__DIR__ . '/../assets/css/styles.css') ?>">
 
-<?php if (!ij_live() || !empty($isPreview)): ?><meta name="robots" content="noindex, nofollow"><?php endif; ?>
+<?php if (!ij_live() || !empty($isPreview) || !empty($isUnlisted)): ?><meta name="robots" content="noindex, nofollow"><?php endif; ?>
 <link rel="stylesheet" href="/assets/css/navigation.css?v=<?= filemtime(__DIR__ . '/../assets/css/navigation.css') ?>">
 <link rel="stylesheet" href="/assets/css/noticia.css?v=<?= filemtime(__DIR__ . '/../assets/css/noticia.css') ?>">
 </head>
