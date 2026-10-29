@@ -35,16 +35,12 @@ require_once __DIR__.'/../app/bootstrap.php';
 
         <div class="hero-copy">
 
-            <p class="eyebrow">
-                Consejo de la Magistratura de la Ciudad
-            </p>
-
             <h1>
                 Consultá el padrón provisorio
             </h1>
 
             <p class="intro">
-                Ingresá el tomo y el folio de tu matrícula del CPACF para consultar el padrón provisorio de las elecciones del Consejo de la Magistratura de la Ciudad de Buenos Aires.
+                Elecciones del Consejo de la Magistratura de la Ciudad de Buenos Aires.
             </p>
 
         </div>
@@ -53,9 +49,12 @@ require_once __DIR__.'/../app/bootstrap.php';
         <div class="search-card">
 
             <form id="padron-form">
+                <p class="form-intro">Ingresá el tomo y el folio de tu matrícula del CPACF.</p>
+                <div class="matricula-fields">
 
-                <div class="field"><label for="tomo">Tomo</label><input type="text" id="tomo" name="tomo" inputmode="numeric" autocomplete="off" maxlength="3" pattern="[0-9]{1,3}" placeholder="Hasta 3 números" required></div>
-                <div class="field"><label for="folio">Folio</label><input type="text" id="folio" name="folio" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{1,4}" placeholder="Hasta 4 números" required></div>
+                <div class="field"><label for="tomo">Tomo</label><input type="text" id="tomo" name="tomo" inputmode="numeric" autocomplete="off" maxlength="3" pattern="[0-9]{1,3}" placeholder="Ej. 123" required></div>
+                <div class="field"><label for="folio">Folio</label><input type="text" id="folio" name="folio" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{1,4}" placeholder="Ej. 4567" required></div>
+                </div>
                 <button
                     type="submit"
                     class="submit-button"
@@ -80,20 +79,13 @@ require_once __DIR__.'/../app/bootstrap.php';
                 hidden
             ></div>
 
+            <aside class="padron-notice" aria-label="Información sobre la consulta"><p>Consulta informativa con datos del CPACF. INFO JURÍDICA no guarda el tomo ni el folio ingresados.</p></aside>
         </div>
 
     </section>
 
 
-<aside class="padron-notice" aria-label="Información sobre la consulta">
 
-    <p>
-        Consulta informativa del padrón provisorio del Consejo de la Magistratura de la Ciudad de Buenos Aires.
-        Los datos se consultan en el CPACF y no se guardan en INFO JURÍDICA.
-        <a href="https://w3.cpacf.org.ar/busquedapadronconsejo/padronprovisorio.aspx" target="_blank" rel="noopener noreferrer">Consultar en la fuente original</a>.
-    </p>
-
-</aside>
 
 </main>
 <?php require __DIR__.'/../includes/footer.php'; ?>

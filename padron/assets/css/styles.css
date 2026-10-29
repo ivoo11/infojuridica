@@ -1,14 +1,14 @@
 /* Consulta electoral integrada al sistema visual del portal. */
-.padron-tool { padding-top: 56px; padding-bottom: 48px; }
-.padron-tool .hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 72px; align-items: start; padding-bottom: 48px; }
+.padron-tool { padding-top: 56px; padding-bottom: 56px; }
+.padron-tool .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; max-width: 1140px; margin: 0 auto; padding-bottom: 0; }
 .padron-tool .eyebrow { color: var(--burgundy); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; line-height: 1.6; margin-bottom: 20px; }
-.padron-tool h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(38px, 4.5vw, 64px); line-height: 1.08; letter-spacing: -.035em; }
-.padron-tool .intro { margin-top: 24px; max-width: 540px; font-size: 17px; line-height: 1.65; color: var(--gray); }
-.padron-tool .search-card { min-width: 0; padding: 32px; border: 1px solid var(--gray-light); background: var(--white); }
+.padron-tool h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(36px, 4vw, 54px); line-height: 1.08; letter-spacing: -.035em; }
+.padron-tool .intro { margin-top: 20px; max-width: 460px; font-size: 16px; line-height: 1.65; color: var(--gray); }
+.padron-tool .search-card { min-width: 0; padding: 28px; border: 0; background: #f5f3ee; }
 .padron-tool .field { border: 0; padding: 0; margin: 0 0 24px; min-width: 0; }
 .padron-tool .field > label, .padron-tool legend { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
-.padron-tool #dni { width: 100%; min-height: 52px; padding: 12px 16px; border: 1px solid var(--gray-light); border-radius: 0; background: white; color: var(--ink); font-family: var(--sans); font-size: 16px; }
-.padron-tool #dni:focus { outline: 2px solid var(--burgundy); outline-offset: 2px; }
+.padron-tool .field input { width: 100%; min-height: 52px; padding: 12px 16px; border: 1px solid var(--gray-light); border-radius: 0; background: white; color: var(--ink); font-family: var(--sans); font-size: 16px; }
+.padron-tool .field input:focus { outline: none; border-color: var(--burgundy); box-shadow: inset 0 0 0 1px var(--burgundy); }
 .padron-tool .sex-options { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
 .padron-tool .radio-option { position: relative; cursor: pointer; }
 .padron-tool .radio-option input { position: absolute; opacity: 0; }
@@ -42,19 +42,24 @@
 .padron-tool .searching-copy { display: flex; flex-direction: column; gap: 4px; }
 .padron-tool .searching-copy strong { font-size: 13px; }
 .padron-tool .searching-copy span { font-size: 12px; }
-.padron-notice { border-top: 1px solid var(--gray-light); padding-top: 24px; color: var(--gray); font-size: 12px; line-height: 1.7; }
-.padron-notice p { max-width: 960px; }
+.padron-notice { margin-top: 20px; border-top: 1px solid #ddd8cf; padding-top: 16px; color: #747474; font-size: 11px; line-height: 1.6; }
+.padron-notice p { margin: 0; }
+.padron-tool .form-intro { font-size: 15px; line-height: 1.6; margin: 0 0 22px; }
+.padron-tool .matricula-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
 @keyframes padronPulse { 0%, 60%, 100% { opacity: .3; } 30% { opacity: 1; } }
 @media (max-width: 900px) {
  .padron-tool .hero { grid-template-columns: 1fr; gap: 32px; }
  .padron-tool .hero-copy { max-width: 650px; }
  .padron-tool .search-card { max-width: 650px; width: 100%; }
+ .padron-tool .hero { max-width: 650px; }
 }
 @media (max-width: 600px) {
  .padron-tool { padding-top: 32px; padding-bottom: 32px; }
  .padron-tool h1 { font-size: 40px; }
  .padron-tool .intro { font-size: 15px; margin-top: 18px; }
- .padron-tool .search-card { padding: 24px; }
+ .padron-tool .search-card { padding: 22px; }
+ .padron-tool .matricula-fields { gap: 12px; }
+ .padron-tool .field input { padding: 12px; }
  .padron-tool .result-grid { grid-template-columns: 1fr; gap: 0; }
  .padron-tool .result-actions { flex-direction: column; }
 }
