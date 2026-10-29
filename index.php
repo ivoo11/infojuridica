@@ -13,6 +13,7 @@
     >
 
     <?php require __DIR__ . '/includes/favicon.php'; ?>
+    <?php require __DIR__ . '/includes/social-home.php'; ?>
 
     <!-- TIPOGRAFÍAS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
