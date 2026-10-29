@@ -52,8 +52,8 @@ require_once __DIR__.'/../app/bootstrap.php';
                 <p class="form-intro">Ingresá el tomo y el folio de tu matrícula del CPACF.</p>
                 <div class="matricula-fields">
 
-                <div class="field"><label for="tomo">Tomo</label><input type="text" id="tomo" name="tomo" inputmode="numeric" autocomplete="off" maxlength="3" pattern="[0-9]{1,3}" placeholder="Ej. 123" required></div>
-                <div class="field"><label for="folio">Folio</label><input type="text" id="folio" name="folio" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{1,4}" placeholder="Ej. 4567" required></div>
+                <div class="field"><label for="tomo">Tomo</label><input type="text" id="tomo" name="tomo" inputmode="numeric" autocomplete="off" maxlength="3" pattern="[0-9]{1,3}" required></div>
+                <div class="field"><label for="folio">Folio</label><input type="text" id="folio" name="folio" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{1,4}" required></div>
                 </div>
                 <button
                     type="submit"
