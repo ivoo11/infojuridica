@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/../app/bootstrap.php';
 ?>
 <!doctype html>
 <html lang="es">
@@ -7,11 +8,11 @@ declare(strict_types=1);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Consulta de padrón electoral | Elecciones Consejo de la Magistratura</title>
+    <title>Padrón provisorio | Consejo de la Magistratura de la Ciudad</title>
 
     <meta
         name="description"
-        content="Consulta individual de lugar de votación."
+        content="Consulta individual del padrón provisorio del CPACF por tomo y folio."
     >
 
     <?php require __DIR__ . '/../includes/favicon.php'; ?>
@@ -35,15 +36,15 @@ declare(strict_types=1);
         <div class="hero-copy">
 
             <p class="eyebrow">
-                Elecciones 2026 · Consejo de la Magistratura de la Nación
+                Consejo de la Magistratura de la Ciudad
             </p>
 
             <h1>
-                Consultá tu lugar de votación
+                Consultá el padrón provisorio
             </h1>
 
             <p class="intro">
-                Consulta del padrón de la abogacía para las elecciones del Consejo de la Magistratura de la Nación. Ingresá tu DNI y el sexo registrado en el padrón.
+                Ingresá el tomo y el folio de tu matrícula del CPACF para consultar el padrón provisorio de las elecciones del Consejo de la Magistratura de la Ciudad de Buenos Aires.
             </p>
 
         </div>
@@ -53,64 +54,14 @@ declare(strict_types=1);
 
             <form id="padron-form">
 
-                <div class="field">
-
-                    <label for="dni">
-                        DNI
-                    </label>
-
-                    <input
-                        type="text"
-                        id="dni"
-                        name="dni"
-                        inputmode="numeric"
-                        autocomplete="off"
-                        maxlength="8"
-                        placeholder="Sin puntos"
-                        required
-                    >
-
-                </div>
-
-
-                <fieldset class="field">
-
-                    <legend>
-                        Sexo
-                    </legend>
-
-                    <div class="sex-options">
-
-                        <label class="radio-option">
-                            <input
-                                type="radio"
-                                name="sexo"
-                                value="F"
-                                required
-                            >
-                            <span>Femenino</span>
-                        </label>
-
-                        <label class="radio-option">
-                            <input
-                                type="radio"
-                                name="sexo"
-                                value="M"
-                            >
-                            <span>Masculino</span>
-                        </label>
-
-                    </div>
-
-                </fieldset>
-
-
+                <div class="field"><label for="tomo">Tomo</label><input type="text" id="tomo" name="tomo" inputmode="numeric" autocomplete="off" maxlength="3" pattern="[0-9]{1,3}" placeholder="Hasta 3 números" required></div>
+                <div class="field"><label for="folio">Folio</label><input type="text" id="folio" name="folio" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{1,4}" placeholder="Hasta 4 números" required></div>
                 <button
                     type="submit"
                     class="submit-button"
                     id="submit-button"
                 >
-                    Consultar lugar de votación
+                    Consultar padrón
                 </button>
 
             </form>
@@ -137,12 +88,9 @@ declare(strict_types=1);
 <aside class="padron-notice" aria-label="Información sobre la consulta">
 
     <p>
-        Herramienta independiente de consulta electoral.
-        No constituye un sitio oficial del Consejo de la Magistratura de la Nación.
-        Los datos ingresados se utilizan exclusivamente para realizar la consulta
-        y no se almacenan en este sitio. Su tratamiento se realiza conforme a la
-        Ley Nº 25.326 de Protección de los Datos Personales.
-        La consulta es procesada mediante una fuente externa.
+        Consulta informativa del padrón provisorio del Consejo de la Magistratura de la Ciudad de Buenos Aires.
+        Los datos se consultan en el CPACF y no se guardan en INFO JURÍDICA.
+        <a href="https://w3.cpacf.org.ar/busquedapadronconsejo/padronprovisorio.aspx" target="_blank" rel="noopener noreferrer">Consultar en la fuente original</a>.
     </p>
 
 </aside>

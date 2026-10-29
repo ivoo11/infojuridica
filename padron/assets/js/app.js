@@ -1,5 +1,6 @@
 const form = document.getElementById('padron-form');
-const dniInput = document.getElementById('dni');
+const tomoInput = document.getElementById('tomo');
+const folioInput = document.getElementById('folio');
 const submitButton = document.getElementById('submit-button');
 const statusBox = document.getElementById('status');
 const resultadoBox = document.getElementById('resultado');
@@ -11,40 +12,11 @@ form.addEventListener('submit', async (event) => {
 
     limpiarResultado();
 
-    const dni = dniInput.value.trim();
-    const sexo = form.querySelector(
-        'input[name="sexo"]:checked'
-    )?.value;
-
-
-    // =====================================================
-    // VALIDACIÓN
-    // =====================================================
-
-    if (!/^\d{7,8}$/.test(dni)) {
-
-        mostrarError(
-            'Ingresá un DNI válido, sin puntos ni espacios.'
-        );
-
-        return;
+    const tomo = tomoInput.value.trim();
+    const folio = folioInput.value.trim();
+    if (!/^[0-9]{1,3}$/.test(tomo) || Number(tomo)<1 || !/^[0-9]{1,4}$/.test(folio) || Number(folio)<1) {
+        mostrarError('Ingresá un tomo y un folio válidos, solo con números.');return;
     }
-
-
-    if (!['M', 'F'].includes(sexo)) {
-
-        mostrarError(
-            'Seleccioná una opción de sexo.'
-        );
-
-        return;
-    }
-
-
-    // =====================================================
-    // INICIAMOS BÚSQUEDA
-    // =====================================================
-
     setCargando(true);
 
 
@@ -61,8 +33,7 @@ form.addEventListener('submit', async (event) => {
                 },
 
                 body: JSON.stringify({
-                    dni: dni,
-                    sexo: sexo
+                    tomo, folio
                 })
             }
         );
@@ -150,7 +121,7 @@ function setCargando(cargando) {
                     </strong>
 
                     <span>
-                        Estamos buscando tu lugar de votación…
+                        Estamos consultando tu matrícula…
                     </span>
 
                 </div>
@@ -163,7 +134,7 @@ function setCargando(cargando) {
     } else {
 
         submitButton.textContent =
-            'Consultar lugar de votación';
+            'Consultar padrón';
 
         statusBox.classList.remove('visible');
 
@@ -187,100 +158,9 @@ function mostrarResultado(data) {
 
 
     resultadoBox.innerHTML = `
-
-        <div class="result-header">
-
-            <span class="result-check">
-                ✓
-            </span>
-
-            <div>
-
-                <span class="result-kicker">
-                    Consulta realizada
-                </span>
-
-                <h2>
-                    Encontramos tu lugar de votación
-                </h2>
-
-            </div>
-
-        </div>
-
-
-        <div class="result-data">
-
-
-            <div class="result-item result-person">
-
-                <span>
-                    Elector/a
-                </span>
-
-                <strong>
-                    ${escapeHTML(data.apellidoNombre)}
-                </strong>
-
-            </div>
-
-
-            <div class="result-grid">
-
-
-                <div class="result-item">
-
-                    <span>
-                        Colegio
-                    </span>
-
-                    <strong>
-                        ${escapeHTML(data.colegio)}
-                    </strong>
-
-                </div>
-
-
-                <div class="result-item">
-
-                    <span>
-                        Dónde votás
-                    </span>
-
-                    <strong>
-                        ${escapeHTML(data.direccionVotacion)}
-                    </strong>
-
-                </div>
-
-
-            </div>
-
-        </div>
-
-
-        <div class="result-actions">
-
-            <button
-                type="button"
-                class="pdf-button"
-                id="download-pdf"
-            >
-                Descargar constancia (PDF)
-            </button>
-
-            <button
-                type="button"
-                class="new-search"
-                id="new-search"
-            >
-                Hacer otra consulta
-            </button>
-
-        </div>
-    `;
-
-
+        <div class="result-header"><div><h2>Figurás en el padrón provisorio</h2></div></div>
+        <div class="result-data"><div class="result-grid">${data.fields.map(field => `<div class="result-item"><span>${escapeHTML(field.label)}</span><strong>${escapeHTML(field.value)}</strong></div>`).join('')}</div></div>
+        <div class="result-actions"><button type="button" class="pdf-button" id="download-pdf">Descargar consulta (PDF)</button><button type="button" class="new-search" id="new-search">Hacer otra consulta</button></div>`;
     resultadoBox.hidden = false;
 
 
@@ -294,7 +174,7 @@ function mostrarResultado(data) {
 
             form.hidden = false;
 
-            dniInput.focus();
+            tomoInput.focus();
 
         });
 
@@ -304,12 +184,9 @@ function mostrarResultado(data) {
                 const button = document.getElementById('download-pdf');
                 button.disabled = true; button.textContent = 'Preparando PDF…';
                 try { await descargarConstancia({
-                    dni: dniInput.value.trim(),
-                    apellidoNombre: data.apellidoNombre,
-                    colegio: data.colegio,
-                    direccionVotacion: data.direccionVotacion
+                    tomo: tomoInput.value.trim(), folio: folioInput.value.trim(), fields: data.fields
                 }); } catch (e) { mostrarError('No pudimos generar el PDF. Intentá nuevamente.'); }
-                finally { button.disabled = false; button.textContent = 'Descargar constancia (PDF)'; }
+                finally { button.disabled = false; button.textContent = 'Descargar consulta (PDF)'; }
             });
 
 }
@@ -386,9 +263,9 @@ async function descargarConstancia(datos) {
         doc.setTextColor(...burgundy); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
         doc.text('ELECCIONES DE LA ABOGACÍA', 20, 61);
         doc.setTextColor(...ink); doc.setFont('times', 'normal'); doc.setFontSize(28);
-        doc.text(continued ? 'Datos de la consulta' : 'Tu lugar de votación', 20, 75);
+        doc.text(continued ? 'Datos de la consulta' : 'Consulta del padrón provisorio', 20, 75);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...gray);
-        doc.text('Consejo de la Magistratura de la Nación', 20, 85);
+        doc.text('Consejo de la Magistratura de la Ciudad de Buenos Aires', 20, 85);
     }
     let y = 101;
     header();
@@ -415,19 +292,17 @@ async function descargarConstancia(datos) {
             if (offset < lines.length) nextPage();
         }
     }
-    field('Elector/a', datos.apellidoNombre, false, 16);
-    field('Documento', datos.dni, false, 12);
-    field('Colegio', datos.colegio);
-    field('Dónde votás', datos.direccionVotacion, true, 15);
+    field('Matrícula consultada', `Tomo ${datos.tomo} · Folio ${datos.folio}`, false, 12);
+    for (const item of datos.fields) field(item.label, item.value);
     const pages = doc.getNumberOfPages();
     for (let page = 1; page <= pages; page++) {
         doc.setPage(page); doc.setDrawColor(...rule); doc.setLineWidth(.3); doc.line(20, 266, 190, 266);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...gray);
         doc.text('Documento informativo, sin validez oficial.', 20, 273);
-        doc.text('Fuente de los datos: Abogados por Argentina.', 20, 278);
+        doc.text('Fuente de los datos: CPACF · Padrón provisorio.', 20, 278);
         doc.setTextColor(...burgundy); doc.textWithLink('infojuridica.com.ar', 20, 286, { url: 'https://infojuridica.com.ar' });
         doc.setTextColor(...gray); doc.text(`${page} / ${pages}`, 190, 286, { align: 'right' });
     }
-    doc.setProperties({ title: 'Consulta de lugar de votación - INFO JURÍDICA', subject: 'Consulta informativa del padrón electoral', author: 'INFO JURÍDICA' });
-    doc.save('infojuridica-lugar-de-votacion.pdf');
+    doc.setProperties({ title: 'Consulta del padrón provisorio - INFO JURÍDICA', subject: 'Consulta informativa del padrón electoral', author: 'INFO JURÍDICA' });
+    doc.save('infojuridica-padron-provisorio.pdf');
 }
