@@ -5,6 +5,14 @@ function cpacfDom(string $html): DOMXPath {
     $old=libxml_use_internal_errors(true);$dom=new DOMDocument();$dom->loadHTML('<?xml encoding="UTF-8">'.$html,LIBXML_NOERROR|LIBXML_NOWARNING);libxml_clear_errors();libxml_use_internal_errors($old);return new DOMXPath($dom);
 }
 function cpacfText(string $value): string {return trim(preg_replace('/\s+/u',' ',$value) ?? '');}
+function cpacfValue(string $label,string $value): string {
+    $key=strtr(mb_strtolower($label),['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u']);
+    // Some legacy records use a slashed o for the ordinal after a floor number.
+    if(preg_match('/padron|direccion|domicilio|piso/',$key)) {
+        $value=preg_replace('/(?<=[0-9])[øØ](?=\s*(?:[\p{L}"\x{27}]|$|[-,.;]))/u','º',$value) ?? $value;
+    }
+    return $value;
+}
 function cpacfForm(string $html): array {
     $xp=cpacfDom($html);$form=$xp->query('//form[@id="form1"]')->item(0);
     if(!$form || !$xp->query('.//input[@name="txtTomo"]',$form)->length || !$xp->query('.//input[@name="txtFolio"]',$form)->length)throw new RuntimeException('Formulario no reconocido');
@@ -22,7 +30,7 @@ function cpacfParse(string $html): array {
     $labels=$xp->query('./th|./td',$rows->item(0));$cells=$xp->query('./td',$rows->item(1));
     if($labels->length!==$cells->length || $cells->length<2)return ['status'=>'unexpected'];
     $fields=[];
-    foreach($cells as $index=>$cell){$label=cpacfText($labels->item($index)->textContent);$value=cpacfText($cell->textContent);if($label!=='' && $value!=='')$fields[]=['label'=>$label,'value'=>$value];}
+    foreach($cells as $index=>$cell){$label=cpacfText($labels->item($index)->textContent);$value=cpacfText($cell->textContent);if($label!=='' && $value!=='')$fields[]=['label'=>$label,'value'=>cpacfValue($label,$value)];}
     if(count($fields)<2)return ['status'=>'unexpected'];
     return ['status'=>'found','fields'=>$fields];
 }
