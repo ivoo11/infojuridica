@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const CPACF_PADRON_URL='https://w3.cpacf.org.ar/busquedapadronconsejo/padronprovisorio.aspx';
+const CPACF_PADRON_URL='https://w3.cpacf.org.ar/padronprovisorio/padronconsejo.aspx';
 function cpacfDom(string $html): DOMXPath {
     $old=libxml_use_internal_errors(true);$dom=new DOMDocument();$dom->loadHTML('<?xml encoding="UTF-8">'.$html,LIBXML_NOERROR|LIBXML_NOWARNING);libxml_clear_errors();libxml_use_internal_errors($old);return new DOMXPath($dom);
 }
@@ -18,12 +18,17 @@ function cpacfForm(string $html): array {
     if(!$form || !$xp->query('.//input[@name="txtTomo"]',$form)->length || !$xp->query('.//input[@name="txtFolio"]',$form)->length)throw new RuntimeException('Formulario no reconocido');
     $fields=[];foreach($xp->query('.//input[@type="hidden"]',$form) as $input)$fields[$input->getAttribute('name')]=$input->getAttribute('value');
     if(empty($fields['__VIEWSTATE']) || empty($fields['__EVENTVALIDATION']))throw new RuntimeException('Formulario incompleto');
-    $submit=$xp->query('.//input[@name="btnAceptar"]',$form)->item(0);if(!$submit)throw new RuntimeException('Formulario incompleto');
-    $fields['btnAceptar']=$submit->getAttribute('value');return $fields;
+    $submit=$xp->query('.//input[@name="btnTomoFolio"]',$form)->item(0);if(!$submit)throw new RuntimeException('Formulario incompleto');
+    $fields['btnTomoFolio']=$submit->getAttribute('value');
+    // The document controls belong to the other search mode; keep them empty.
+    $fields['txtDocumento']='';
+    $option=$xp->query('.//select[@name="ddlTipoDocumento"]/option[@selected]',$form)->item(0) ?? $xp->query('.//select[@name="ddlTipoDocumento"]/option',$form)->item(0);
+    if($option)$fields['ddlTipoDocumento']=$option->getAttribute('value');
+    return $fields;
 }
 function cpacfParse(string $html): array {
     $xp=cpacfDom($html);$count=$xp->query('//*[@id="lblCantidad"]')->item(0);
-    if($count && str_contains(mb_strtolower(cpacfText($count->textContent)),'no se encontraron resultados'))return ['status'=>'not_found'];
+    if($count){$message=mb_strtolower(cpacfText($count->textContent));if(str_contains($message,'no se encontraron resultados') || str_contains($message,'no se han encontrado matriculados que coincidan'))return ['status'=>'not_found'];}
     $grid=$xp->query('//table[@id="grdDatosMatriculados"]')->item(0);
     if(!$grid)return ['status'=>'unexpected'];
     $rows=$xp->query('./tr|./tbody/tr',$grid);if($rows->length!==2)return ['status'=>'unexpected'];
