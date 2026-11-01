@@ -13,10 +13,8 @@ if (!$subscription) http_response_code(400);
 $noticia=['titulo'=>'Baja del newsletter','bajada'=>'Gestionar la suscripción a INFO JURÍDICA.'];$isPreview=true;$hideNewsletterSignup=true;
 require __DIR__.'/includes/listing-head.php';require __DIR__.'/includes/header.php';
 ?>
-<link rel="stylesheet" href="/assets/css/newsletter-signup.css?v=<?= filemtime(__DIR__.'/assets/css/newsletter-signup.css') ?>">
-<main class="container newsletter-registration"><h1>Baja del newsletter</h1>
-<?php if ($done || ($subscription && $subscription['status']==='unsubscribed')): ?><p class="newsletter-feedback" role="status">Tu baja quedó registrada. No recibirás más newsletters.</p>
-<?php elseif (!$subscription): ?><p class="newsletter-feedback">Este enlace no es válido o fue reemplazado. Usá el enlace del correo más reciente.</p>
-<?php else: ?><p>Podés dejar de recibir el newsletter sin iniciar sesión.</p><form method="post" action="/newsletter-baja.php?token=<?= ij_e($token) ?>" class="newsletter-registration-box"><button class="newsletter-signup-button">Confirmar baja</button></form><?php endif; ?>
-<p><a href="/">Volver al portal</a></p></main><?php require __DIR__.'/includes/footer.php'; ?>
+<link rel="stylesheet" href="/assets/css/newsletter-unsubscribe.css?v=<?= filemtime(__DIR__.'/assets/css/newsletter-unsubscribe.css') ?>">
+<main class="container newsletter-unsubscribe">
+<?php require __DIR__.'/includes/newsletter-unsubscribe-panel.php'; ?>
+</main><?php require __DIR__.'/includes/footer.php'; ?>
 <script src="/assets/js/app.js?v=<?= filemtime(__DIR__.'/assets/js/app.js') ?>"></script><script src="/assets/js/navigation.js?v=<?= filemtime(__DIR__.'/assets/js/navigation.js') ?>"></script></body></html>
