@@ -8,4 +8,5 @@ return [
  'smtp_user'=>'noreply@infojuridica.com.ar',
  'smtp_password'=>'',
  'daily_limit'=>90,
+ 'minute_limit'=>5,
 ];

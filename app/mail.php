@@ -44,11 +44,12 @@ function ij_mail_render(array $snapshot,?int $subscriberId=null): array {
     try {require __DIR__.'/../includes/newsletter-template.php';$html=ob_get_clean();}catch(Throwable $e){ob_end_clean();throw $e;}
     return ['subject'=>$edition['subject'],'html'=>$html,'headers'=>$unsubscribeUrl ? ['List-Unsubscribe'=>'<'.$unsubscribeUrl.'>','List-Unsubscribe-Post'=>'List-Unsubscribe=One-Click'] : []];
 }
-function ij_mail_queue_test(int $editionId,string $recipient): void {
+function ij_mail_queue_test(int $editionId,string $recipient): int {
     if (!ij_mail_enabled()) throw new InvalidArgumentException('Primero conectá la casilla SMTP en config/mail.local.php.');
     if (!filter_var($recipient,FILTER_VALIDATE_EMAIL) || strlen($recipient)>190) throw new InvalidArgumentException('Ingresá un correo válido para la prueba.');
     ij_mail_ready();$message=ij_mail_render(ij_mail_snapshot($editionId));
     $s=ij_db()->prepare("INSERT INTO newsletter_mail_jobs(kind,recipient,subject,html) VALUES('test',?,?,?)");$s->execute([$recipient,mb_substr('[PRUEBA] '.$message['subject'],0,190),$message['html']]);
+    return (int)ij_db()->lastInsertId();
 }
 function ij_mail_queue_campaign(int $editionId): int {
     if (!ij_mail_enabled()) throw new InvalidArgumentException('Primero conectá la casilla SMTP.');
@@ -65,16 +66,32 @@ function ij_mail_queue_campaign(int $editionId): int {
         $db->commit();return count($subscribers);
     }catch(Throwable $e){if($db->inTransaction())$db->rollBack();throw $e;}
 }
-function ij_mail_process(?callable $transport=null): string {
+function ij_mail_daily_limit(): int {return max(1,min(90,(int)(ij_mail_config()['daily_limit'] ?? 90)));}
+function ij_mail_minute_limit(): int {return max(1,min(10,(int)(ij_mail_config()['minute_limit'] ?? 5)));}
+function ij_mail_quota(): array {
+    ij_mail_ready();$db=ij_db();
+    $minute=$db->query('SELECT COUNT(*) used,UNIX_TIMESTAMP(MIN(reserved_at))+60 ready_at FROM newsletter_mail_jobs WHERE reserved_at > DATE_SUB(UTC_TIMESTAMP(),INTERVAL 60 SECOND)')->fetch();
+    $daily=(int)$db->query('SELECT COUNT(*) FROM newsletter_mail_jobs WHERE reserved_at >= DATE_SUB(UTC_TIMESTAMP(),INTERVAL 24 HOUR)')->fetchColumn();
+    return ['daily_remaining'=>max(0,ij_mail_daily_limit()-$daily),'minute_remaining'=>max(0,ij_mail_minute_limit()-(int)$minute['used']),'retry_after'=>max(1,(int)($minute['ready_at'] ?? 0)-time()+1)];
+}
+function ij_mail_campaign_status(int $campaign): array {
+    $s=ij_db()->prepare('SELECT status,COUNT(*) total FROM newsletter_mail_jobs WHERE campaign_id=? GROUP BY status');$s->execute([$campaign]);
+    $counts=['queued'=>0,'sent'=>0,'failed'=>0,'processing'=>0,'cancelled'=>0];foreach($s as $row)$counts[$row['status']]=(int)$row['total'];
+    return ['counts'=>$counts,'total'=>array_sum($counts),'quota'=>ij_mail_quota(),'enabled'=>ij_mail_enabled()];
+}
+function ij_mail_process(?callable $transport=null,?int $jobId=null,?int $campaignId=null): string {
     if (!ij_mail_enabled()) return 'disabled';
     ij_mail_ready();$db=ij_db();$lock='ij_mail_'.substr(hash('sha256',ij_config()['db']['name']),0,24);
     $s=$db->prepare('SELECT GET_LOCK(?,0)');$s->execute([$lock]);if(!(int)$s->fetchColumn())return 'busy';
     try {
         // Reserve before networking. A crash leaves processing for review, never an automatic duplicate.
-        $limit=max(1,min(90,(int)(ij_mail_config()['daily_limit'] ?? 90)));
+        $limit=ij_mail_daily_limit();
         if ((int)$db->query('SELECT COUNT(*) FROM newsletter_mail_jobs WHERE reserved_at >= DATE_SUB(UTC_TIMESTAMP(),INTERVAL 24 HOUR)')->fetchColumn()>=$limit) return 'daily_limit';
-        if ((int)$db->query('SELECT COUNT(*) FROM newsletter_mail_jobs WHERE reserved_at > DATE_SUB(UTC_TIMESTAMP(),INTERVAL 60 SECOND)')->fetchColumn()) return 'minute_limit';
-        $job=$db->query("SELECT * FROM newsletter_mail_jobs WHERE status='queued' ORDER BY id LIMIT 1")->fetch();if(!$job)return 'empty';
+        if ((int)$db->query('SELECT COUNT(*) FROM newsletter_mail_jobs WHERE reserved_at > DATE_SUB(UTC_TIMESTAMP(),INTERVAL 60 SECOND)')->fetchColumn()>=ij_mail_minute_limit()) return 'minute_limit';
+        $sql="SELECT * FROM newsletter_mail_jobs WHERE status='queued'";$args=[];
+        if($jobId!==null){$sql.=' AND id=?';$args[]=$jobId;}
+        if($campaignId!==null){$sql.=' AND campaign_id=?';$args[]=$campaignId;}
+        $s=$db->prepare($sql.' ORDER BY id LIMIT 1');$s->execute($args);$job=$s->fetch();if(!$job)return 'empty';
         if ($job['kind']==='newsletter') {
             $s=$db->prepare('SELECT status FROM newsletter_subscribers WHERE id=?');$s->execute([$job['subscriber_id']]);
             if ($s->fetchColumn()!=='active') {$s=$db->prepare("UPDATE newsletter_mail_jobs SET status='cancelled' WHERE id=?");$s->execute([$job['id']]);return 'cancelled';}
@@ -90,4 +107,13 @@ function ij_mail_process(?callable $transport=null): string {
             $s=$db->prepare("UPDATE newsletter_mail_jobs SET status='sent',sent_at=UTC_TIMESTAMP(),html=NULL WHERE id=?");$s->execute([$job['id']]);return 'sent';
         }catch(Throwable $e){$s=$db->prepare("UPDATE newsletter_mail_jobs SET status='failed',last_error='No se confirmó la entrega SMTP. Revisar antes de reintentar.' WHERE id=?");$s->execute([$job['id']]);error_log('INFO JURIDICA: fallo de envío SMTP. Job '.(int)$job['id']);return 'failed';}
     }finally{$s=$db->prepare('SELECT RELEASE_LOCK(?)');$s->execute([$lock]);}
+}
+
+function ij_mail_process_batch(?callable $transport=null): array {
+    $results=[];$started=microtime(true);
+    for($i=0;$i<ij_mail_minute_limit() && microtime(true)-$started<18;$i++) {
+        $result=ij_mail_process($transport);$results[]=$result;
+        if(!in_array($result,['sent','cancelled'],true))break;
+    }
+    return $results;
 }

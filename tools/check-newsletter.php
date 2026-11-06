@@ -6,7 +6,8 @@ echo 'PHPMailer: '.PHPMailer\PHPMailer\PHPMailer::VERSION.PHP_EOL;
 echo 'OpenSSL: '.(extension_loaded('openssl')?'OK':'FALTA').PHP_EOL;
 echo 'Contraseña SMTP: '.(!empty($c['smtp_password'])?'configurada':'falta').PHP_EOL;
 echo 'Envíos: '.(ij_mail_enabled()?'habilitados':'deshabilitados').PHP_EOL;
-echo 'Límite propio por 24 horas: '.max(1,min(90,(int)($c['daily_limit']??90))).PHP_EOL;
+echo 'Límite propio por 24 horas: '.ij_mail_daily_limit().PHP_EOL;
+echo 'Límite propio por minuto: '.ij_mail_minute_limit().PHP_EOL;
 if (!in_array('--smtp',$argv,true)) {
     echo 'Esta comprobación no establece conexión SMTP ni envía mensajes.'.PHP_EOL;
     exit;
