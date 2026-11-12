@@ -1,5 +1,10 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
+# One public host; restrict redirects to reads so POST forms keep their method.
+RewriteCond %{HTTP_HOST} ^www\.infojuridica\.com\.ar$ [NC]
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$
+RewriteRule ^ https://infojuridica.com.ar%{REQUEST_URI} [R=301,END]
+RewriteRule ^sitemap\.xml$ sitemap.php [END]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(noticias|opinion)/[a-z0-9-]+/?$ publication.php [END]

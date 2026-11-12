@@ -4,6 +4,8 @@ $listingPages = max(1, (int) ceil($listingCount / 6));
 $requestedPage = filter_var($_GET['pagina'] ?? 1, FILTER_VALIDATE_INT);
 $listingPage = min($listingPages, max(1, $requestedPage ?: 1));
 $listingSlice = array_slice($listingItems, ($listingPage - 1) * 6, 6);
+$seoPage=$listingPage;
+if(empty($seoNoIndex)) { require_once __DIR__.'/../app/seo.php';$seoCanonical=ij_seo_page($listingBase,$listingPage); }
 $noticia = ['titulo' => $listingTitle, 'bajada' => $listingDescription];
 require __DIR__ . '/listing-head.php';
 require __DIR__ . '/header.php';

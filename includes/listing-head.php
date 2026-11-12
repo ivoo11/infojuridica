@@ -1,10 +1,11 @@
+<?php require_once __DIR__.'/../app/seo.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title><?= htmlspecialchars($noticia["titulo"], ENT_QUOTES, "UTF-8") ?> — Info Jurídica</title>
+    <title><?= htmlspecialchars($noticia["titulo"], ENT_QUOTES, "UTF-8") ?><?= ($seoPage ?? 1)>1?' · Página '.(int)$seoPage:'' ?> — Info Jurídica</title>
 
     <meta
         name="description"
@@ -24,7 +25,8 @@
     <link rel="stylesheet"
       href="/assets/css/styles.css?v=<?= filemtime(__DIR__ . '/../assets/css/styles.css') ?>">
 
-<?php if (!ij_live() || !empty($isPreview)): ?><meta name="robots" content="noindex, nofollow"><?php endif; ?>
+<?php if (!ij_live() || !empty($isPreview)): ?><meta name="robots" content="noindex, nofollow"><?php elseif(!empty($seoNoIndex)):?><meta name="robots" content="noindex, follow"><?php endif; ?>
+<?php if(ij_live() && empty($isPreview) && empty($seoNoIndex) && !empty($seoCanonical)):?><link rel="canonical" href="<?= ij_e(ij_seo_url($seoCanonical)) ?>"><?php endif;?>
 <link rel="stylesheet" href="/assets/css/navigation.css?v=<?= filemtime(__DIR__ . '/../assets/css/navigation.css') ?>">
 <link rel="stylesheet" href="/assets/css/pages.css?v=<?= filemtime(__DIR__ . '/../assets/css/pages.css') ?>">
 </head>

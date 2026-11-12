@@ -13,6 +13,7 @@
 
     <?php require __DIR__ . '/favicon.php'; ?>
     <?php require __DIR__ . '/social-article.php'; ?>
+    <?php require __DIR__ . '/seo-article.php'; ?>
 
     <!-- TIPOGRAFÍAS -->
     <?php if (ij_live() && empty($isPreview) && empty($isUnlisted)): ?><link rel="canonical" href="<?= ij_e('https://infojuridica.com.ar'.$noticia['url']) ?>"><?php endif; ?>

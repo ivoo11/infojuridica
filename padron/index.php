@@ -16,6 +16,7 @@ require_once __DIR__.'/../app/bootstrap.php';
     >
 
     <?php require __DIR__ . '/../includes/favicon.php'; ?>
+    <link rel="canonical" href="https://infojuridica.com.ar/padron/">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

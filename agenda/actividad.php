@@ -7,6 +7,7 @@ $event=null;
 if (ij_live() && $id && $id>0) { ij_events_ready();$s=ij_db()->prepare("SELECT * FROM events WHERE id=?".($isPreview?'':" AND status='published'"));$s->execute([$id]);$event=$s->fetch(); }
 if (!$event) { require __DIR__.'/../404.php';return; }
 $noticia=['titulo'=>$event['title'],'bajada'=>mb_substr($event['description'],0,160)];
+$seoCanonical='/agenda/actividad.php?id='.(int)$event['id'];
 require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';
 ?>
 <main class="container event-detail">

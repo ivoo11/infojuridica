@@ -4,6 +4,7 @@ $columns=ij_posts('opinion');$pages=max(1,(int)ceil(count($columns)/6));
 $requested=filter_var($_GET['pagina'] ?? 1,FILTER_VALIDATE_INT);$page=min($pages,max(1,$requested ?: 1));
 $items=array_slice($columns,($page-1)*6,6);
 $noticia=['titulo'=>'Opinión','bajada'=>'Todas las columnas de INFO JURÍDICA.'];
+$seoPage=$page;$seoCanonical='/opinion/'.($page>1?'?pagina='.$page:'');
 require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';
 ?>
 <link rel="stylesheet" href="/assets/css/opinion-archive.css?v=<?= filemtime(__DIR__.'/../assets/css/opinion-archive.css') ?>">

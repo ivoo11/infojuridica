@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /app/
+Disallow: /config/
+Disallow: /database/
+Disallow: /docs/
+Disallow: /tools/
+Disallow: /vendor/
+
+Sitemap: https://infojuridica.com.ar/sitemap.xml

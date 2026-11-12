@@ -1,6 +1,7 @@
 <?php
 require __DIR__.'/../app/events.php';$events=ij_upcoming_events();
 $noticia=['titulo'=>'Agenda','bajada'=>'Próximas actividades de la comunidad jurídica.'];
+$seoCanonical='/agenda/';
 require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/header.php';
 ?>
 <main class="container event-detail"><?php if($events):?><div class="section-kicker">Próximas actividades</div><?php endif;?><h1>Agenda</h1>
