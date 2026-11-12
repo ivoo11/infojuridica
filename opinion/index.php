@@ -15,7 +15,7 @@ require __DIR__.'/../includes/listing-head.php';require __DIR__.'/../includes/he
 <article class="opinion-archive-card"><a href="<?= ij_e($column['url']) ?>"><div class="opinion-archive-author"><img src="<?= ij_e(($column['author_photo'] ?? '') ?: '/assets/img/autor-placeholder.svg') ?>" alt="<?= ij_e('Retrato de '.($column['author_name'] ?? 'autor')) ?>" width="72" height="72" loading="lazy"><div><strong><?= ij_e($column['author_name'] ?? 'Autor de demostración') ?></strong><?php if(!empty($column['author_role'])):?><span><?= ij_e($column['author_role']) ?></span><?php endif;?></div></div><h2><?= ij_e($column['titulo']) ?></h2><p><?= ij_e($column['bajada']) ?></p><time datetime="<?= ij_e($column['fecha']) ?>"><?= ij_date($column['fecha']) ?></time></a></article>
 <?php endforeach;?></div>
 <?php endif;?>
-<?php if($pages>1):?><nav class="listing-pagination" aria-label="Páginas de opinión"><?php for($i=1;$i<=$pages;$i++):?><?php if($i===$page):?><span aria-current="page"><?= $i ?></span><?php else:?><a href="/opinion/?pagina=<?= $i ?>"><?= $i ?></a><?php endif;?><?php endfor;?></nav><?php endif;?>
+<?php $paginationCurrent=$page;$paginationTotal=$pages;$paginationBase='/opinion/';require __DIR__.'/../includes/pagination.php'; ?>
 </main>
 <?php require __DIR__.'/../includes/footer.php'; ?>
 <script src="/assets/js/app.js?v=<?= filemtime(__DIR__.'/../assets/js/app.js') ?>"></script><script src="/assets/js/navigation.js?v=<?= filemtime(__DIR__.'/../assets/js/navigation.js') ?>"></script>

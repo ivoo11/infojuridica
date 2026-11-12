@@ -19,14 +19,7 @@ require __DIR__ . '/header.php';
         <?php endforeach; ?>
     </div>
     <?php if (!$listingCount): ?><p><?= !empty($listingIsCategory) ? 'Todavía no hay noticias en esta sección.' : 'No encontramos publicaciones para esta búsqueda.' ?></p><?php endif; ?>
-    <?php if ($listingPages > 1): ?>
-    <nav class="listing-pagination" aria-label="Páginas de resultados">
-        <?php for ($i = 1; $i <= $listingPages; $i++): ?>
-            <?php if ($i === $listingPage): ?><span aria-current="page"><?= $i ?></span>
-            <?php else: ?><a href="<?= htmlspecialchars($listingBase . (str_contains($listingBase, '?') ? '&' : '?') . 'pagina=' . $i, ENT_QUOTES, 'UTF-8') ?>"><?= $i ?></a><?php endif; ?>
-        <?php endfor; ?>
-    </nav>
-    <?php endif; ?>
+    <?php $paginationCurrent=$listingPage;$paginationTotal=$listingPages;$paginationBase=$listingBase;require __DIR__.'/pagination.php'; ?>
 </main>
 <?php require __DIR__ . '/footer.php'; ?>
 <script src="/assets/js/app.js?v=<?= filemtime(__DIR__ . '/../assets/js/app.js') ?>"></script>
