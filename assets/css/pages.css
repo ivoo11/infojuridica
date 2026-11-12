@@ -2,18 +2,19 @@
 .listing-heading { padding: 20px 0 36px; }
 .listing-heading h1 { font-family: var(--serif); font-size: clamp(36px,5vw,60px); font-weight: 500; letter-spacing: -.035em; }
 .listing-heading p { color: var(--gray); font-size: 12px; line-height: 1.7; margin-top: 14px; }
-.listing-pagination{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;max-width:720px;margin:40px auto 0;padding-top:24px;border-top:1px solid var(--gray-light)}
+.listing-pagination{display:grid;grid-template-columns:auto auto auto;align-items:center;gap:16px;width:max-content;max-width:100%;margin:36px auto 0;padding:0;border:0}
 .pagination-pages{display:flex;align-items:center;justify-content:center;gap:6px}
 .listing-pagination a,.listing-pagination span{display:inline-flex;align-items:center;justify-content:center;min-height:44px;font-size:13px;text-decoration:none}
-.pagination-number{min-width:42px;padding:8px;border:1px solid transparent}
+.pagination-number{min-width:40px;padding:8px;border:1px solid var(--gray-light)}
 .listing-pagination [aria-current]{background:var(--burgundy);border-color:var(--burgundy);color:white;font-weight:600}
+.listing-pagination a{color:var(--ink,#171717)}
 .listing-pagination a:hover{color:var(--burgundy);background:#f5f3ee}
 .listing-pagination a:focus-visible{outline:2px solid var(--burgundy);outline-offset:3px}
 .pagination-ellipsis{width:18px;color:var(--gray)}
 .pagination-previous{justify-self:start;padding:8px 4px}
 .pagination-next{justify-self:end;padding:8px 4px}
 .listing-pagination [aria-disabled]{color:#aaa;cursor:default}
-@media(max-width:600px){.listing-pagination{grid-template-columns:1fr 1fr;gap:12px;margin-top:30px;padding-top:18px}.pagination-pages{grid-column:1/-1;grid-row:1;gap:4px}.pagination-number{min-width:36px;padding:8px 6px}.pagination-previous{grid-column:1;grid-row:2}.pagination-next{grid-column:2;grid-row:2}}
+@media(max-width:600px){.listing-pagination{grid-template-columns:1fr 1fr;gap:10px;margin-top:28px;padding-top:0}.pagination-pages{grid-column:1/-1;grid-row:1;gap:4px}.pagination-number{min-width:36px;padding:8px 6px}.pagination-previous{grid-column:1;grid-row:2}.pagination-next{grid-column:2;grid-row:2}}
 
 /* Actividades: misma tipografía y fondo del portal. */
 .event-detail { padding-top: 48px; padding-bottom: 64px; max-width: 1000px; }
