@@ -10,13 +10,14 @@
 </table></td></tr>
 <?php if ($edition['introduction']!==''): ?><tr><td style="padding:24px 24px 0;font-size:16px;line-height:1.6;"><?= nl2br(ij_e($edition['introduction'])) ?></td></tr><?php endif; ?>
 <?php if (count($posts)!==count($edition['ids'])): ?><tr><td style="padding:24px;color:#711b2d;">Una noticia seleccionada ya no está disponible. Volvé al editor para reemplazarla.</td></tr><?php endif; ?>
-<?php foreach ($posts as $index=>$post): $url=ij_newsletter_url($post['url']); ?><tr><td style="padding:24px;border-bottom:1px solid #e3e0da;">
-<?php if ($index===0 && $post['image']): ?><a href="<?= ij_e($url) ?>"><img src="<?= ij_e(ij_newsletter_url($post['image'])) ?>" alt="<?= ij_e($post['image_alt']) ?>" width="552" style="display:block;width:100%;height:auto;border:0;margin-bottom:20px;"></a><?php endif; ?>
+<?php foreach ($posts as $index=>$post): $url=ij_newsletter_url($post['url']); ?><tr><td style="padding:0;border-bottom:1px solid #e3e0da;">
+<a href="<?= ij_e($url) ?>" style="display:block;padding:24px;color:#171717;text-decoration:none;">
+<?php if ($index===0 && $post['image']): ?><img src="<?= ij_e(ij_newsletter_url($post['image'])) ?>" alt="<?= ij_e($post['image_alt']) ?>" width="552" style="display:block;width:100%;height:auto;border:0;margin-bottom:20px;"><?php endif; ?>
 <p style="color:#711b2d;font-size:11px;letter-spacing:1px;margin:0 0 10px;"><?= ij_e($post['categoria']) ?></p>
-<h2 style="font-family:Georgia,serif;font-size:<?= $index===0 ? '28' : '22' ?>px;line-height:1.25;margin:0 0 12px;font-weight:normal;"><a href="<?= ij_e($url) ?>" style="color:#171717;text-decoration:none;"><?= ij_e($post['title']) ?></a></h2>
+<h2 style="font-family:Georgia,serif;font-size:<?= $index===0 ? '28' : '22' ?>px;line-height:1.25;margin:0 0 12px;font-weight:normal;color:#171717;"><?= ij_e($post['title']) ?></h2>
 <p style="font-size:15px;line-height:1.6;color:#555;margin:0 0 14px;"><?= ij_e($post['summary']) ?></p>
-<a href="<?= ij_e($url) ?>" style="color:#711b2d;font-size:14px;">Leer noticia</a>
-</td></tr><?php endforeach; ?>
+<span style="color:#711b2d;font-size:14px;text-decoration:underline;">Leer noticia</span>
+</a></td></tr><?php endforeach; ?>
 <?php if ($events): ?><tr><td style="padding:24px;"><h2 style="font-family:Georgia,serif;font-size:24px;font-weight:normal;margin:0 0 18px;">Próximas actividades</h2><?php foreach ($events as $event): ?><p style="margin:0 0 18px;font-size:14px;line-height:1.5;"><a style="color:#711b2d;" href="<?= ij_e(ij_newsletter_url('/agenda/actividad.php?id='.(int)$event['id'])) ?>"><?= ij_e($event['title']) ?></a><br><span style="color:#666;"><?= ij_e($event['newsletter_dates'] ?? ij_event_card_schedule(ij_event_days($event))['dates']) ?></span></p><?php endforeach; ?></td></tr><?php endif; ?>
 <tr><td align="center" bgcolor="#171717" style="padding:22px 24px;background:#171717;text-align:center;">
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto;"><tr><td align="center"><a href="https://www.instagram.com/infojuridicaarg/" title="Instagram · @infojuridicaarg" aria-label="Instagram de INFO JURÍDICA: @infojuridicaarg" style="display:inline-block;padding:8px;text-decoration:none;color:#fff;"><img src="https://infojuridica.com.ar/assets/img/instagram-white.png" width="28" height="28" alt="Instagram" style="display:block;width:28px;height:28px;border:0;"></a></td></tr></table>
