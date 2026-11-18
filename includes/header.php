@@ -7,7 +7,7 @@ $headerDate = $headerDays[(int) $headerNow->format('w')] . ' ' . $headerNow->for
     <!-- TOPBAR -->
     <div class="topbar">
         <div class="container topbar-inner">
-            <div class="topbar-date">Argentina · <time id="argentinaClock" datetime="<?= $headerNow->format('Y-m-d') ?>" data-timestamp="<?= $headerNow->format('Uv') ?>"><?= $headerDate ?></time></div>
+            <div class="topbar-date"><time id="argentinaClock" datetime="<?= $headerNow->format('Y-m-d') ?>" data-timestamp="<?= $headerNow->format('Uv') ?>"><?= $headerDate ?></time></div>
         </div>
     </div>
     <script defer src="/assets/js/clock.js?v=<?= filemtime(__DIR__ . '/../assets/js/clock.js') ?>"></script>
