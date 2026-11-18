@@ -1,10 +1,16 @@
 <?php
 require __DIR__.'/../app/admin.php';
+if ($_SERVER['REQUEST_METHOD']==='GET' && ($_GET['form_token'] ?? '')==='1') {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['csrf'=>ij_csrf()]);exit;
+}
 $next=is_string($_GET['next'] ?? null)?$_GET['next']:'';
 if(!preg_match('~^/admin/editar\.php(?:\?(?:id=[1-9][0-9]*|recovery=[a-f0-9]{32}))?$~D',$next))$next='/admin/';
 if (ij_user()) { header('Location: '.$next); exit; }
 $error='';
-if ($_SERVER['REQUEST_METHOD']==='POST') {
+if ($_SERVER['REQUEST_METHOD']==='POST' && (!is_string($_POST['csrf'] ?? null) || !hash_equals(ij_csrf(),$_POST['csrf']))) {
+    $error='Renovamos el formulario por seguridad. Volvé a ingresar tu contraseña.';
+} elseif ($_SERVER['REQUEST_METHOD']==='POST') {
     ij_check_csrf();
     $key=hash('sha256',$_SERVER['REMOTE_ADDR'] ?? 'local');
     $db=ij_db();
@@ -27,5 +33,6 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 }
 $pageTitle='Ingresar al panel';require __DIR__.'/_head.php';
 ?>
-<form class="editor login" method="post"><input type="hidden" name="csrf" value="<?= ij_csrf() ?>"><?php if ($error): ?><p class="error" role="alert"><?= ij_e($error) ?></p><?php endif; ?><label>Correo<input type="email" name="email" required autocomplete="username" maxlength="190"></label><label>Contraseña<input type="password" name="password" required autocomplete="current-password"></label><button class="primary">Ingresar</button></form>
+<form class="editor login" method="post" data-login-form><input type="hidden" name="csrf" value="<?= ij_csrf() ?>"><?php if ($error): ?><p class="error" role="alert"><?= ij_e($error) ?></p><?php endif; ?><p class="error" role="alert" data-login-error hidden></p><label>Correo<input type="email" name="email" required autocomplete="username" maxlength="190" value="<?= ij_e(ij_field('email')) ?>"></label><label>Contraseña<input type="password" name="password" required autocomplete="current-password"></label><button class="primary">Ingresar</button></form>
+<script defer src="/assets/js/login.js?v=<?= filemtime(__DIR__.'/../assets/js/login.js') ?>"></script>
 <?php require __DIR__.'/_foot.php'; ?>
