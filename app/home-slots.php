@@ -58,23 +58,34 @@ function ij_sync_home_slots(bool $force=false): void {
     }catch(Throwable $e){if($db->inTransaction())$db->rollBack();throw $e;}
 }
 function ij_save_home_slots(array $values,array $pins=[]): void {
-    $current=ij_home_slots();$valid=array_map(fn($p)=>(int)$p['id'],ij_posts('news'));$selected=[];$clean=[];
-    foreach (ij_slot_names() as $key=>$label) {
-        $value=$values[$key] ?? '';
-        if ($value==='' || $value===null) { if(in_array($key,$pins,true))throw new InvalidArgumentException('Elegí una noticia antes de fijar su posición.');$clean[$key]=null;continue; }
-        $id=filter_var($value,FILTER_VALIDATE_INT);
-        $unchangedPin=in_array($key,$pins,true) && $id===($current[$key] ?? null);
-        if ($id===false || (!in_array($id,$valid,true) && !$unchangedPin)) throw new InvalidArgumentException('Elegí noticias publicadas y visibles.');
-        if (in_array($id,$selected,true)) throw new InvalidArgumentException('Una noticia no puede ocupar dos posiciones. Elegí una diferente o dejá la posición vacía.');
-        $selected[]=$id;$clean[$key]=$id;
-    }
+    ij_home_slots();
     $db=ij_db();$db->beginTransaction();
     try {
-        $db->query('SELECT slot_key FROM home_slots ORDER BY slot_key FOR UPDATE')->fetchAll();
-        $db->query('SELECT slot_key FROM home_slot_pins ORDER BY slot_key FOR UPDATE')->fetchAll();
+        $rows=$db->query('SELECT slot_key,post_id FROM home_slots ORDER BY slot_key FOR UPDATE')->fetchAll();$current=[];
+        foreach($rows as $row)$current[$row['slot_key']]=$row['post_id']===null?null:(int)$row['post_id'];
+        $previousPins=$db->query('SELECT slot_key FROM home_slot_pins ORDER BY slot_key FOR UPDATE')->fetchAll(PDO::FETCH_COLUMN);
+        $pins=array_values(array_intersect(array_keys(ij_slot_names()),$pins));
+        $released=count(array_diff($previousPins,$pins))>0;
+        $valid=array_map(fn($p)=>(int)$p['id'],ij_posts('news'));$selected=[];$clean=[];
+        foreach (ij_slot_names() as $key=>$label) {
+            // Released positions return to chronology, so discard stale manual selections in every free slot.
+            if($released && !in_array($key,$pins,true)){$clean[$key]=null;continue;}
+            $value=$values[$key] ?? '';
+            if ($value==='' || $value===null) { if(in_array($key,$pins,true))throw new InvalidArgumentException('Elegí una noticia antes de fijar su posición.');$clean[$key]=null;continue; }
+            $id=filter_var($value,FILTER_VALIDATE_INT);
+            $unchangedPin=in_array($key,$pins,true) && $id===($current[$key] ?? null);
+            if ($id===false || (!in_array($id,$valid,true) && !$unchangedPin)) throw new InvalidArgumentException('Elegí noticias publicadas y visibles.');
+            if (in_array($id,$selected,true)) throw new InvalidArgumentException('Una noticia no puede ocupar dos posiciones. Elegí una diferente o dejá la posición vacía.');
+            $selected[]=$id;$clean[$key]=$id;
+        }
+        if($released){
+            $reserved=[];foreach($pins as $key)$reserved[]=$clean[$key];
+            $queue=array_values(array_diff($valid,$reserved));
+            foreach(ij_slot_names() as $key=>$label)if(!in_array($key,$pins,true))$clean[$key]=array_shift($queue);
+        }
         $s=$db->prepare('UPDATE home_slots SET post_id=? WHERE slot_key=?');foreach ($clean as $key=>$id) $s->execute([$id,$key]);
         $db->exec('DELETE FROM home_slot_pins');$s=$db->prepare('INSERT INTO home_slot_pins(slot_key) VALUES(?)');
-        foreach(array_keys(ij_slot_names()) as $key)if(in_array($key,$pins,true))$s->execute([$key]);
+        foreach($pins as $key)$s->execute([$key]);
         $db->commit();
     } catch (Throwable $e) { if ($db->inTransaction()) $db->rollBack();throw $e; }
 }
